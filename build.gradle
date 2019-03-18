@@ -17,9 +17,12 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.0"
+version = "1.7.10-1.5.0"
 group= "com.wildmobsmod" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "wildmobsmod"
+archivesBaseName = "WildMobs"
+
+srcCompat = JavaVersion.VERSION_1_8
+targetCompat = JavaVersion.VERSION_1_8
 
 minecraft {
     version = "1.7.10-10.13.4.1558-1.7.10"

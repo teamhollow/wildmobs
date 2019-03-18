@@ -1,16 +1,13 @@
 package com.wildmobsmod.entity.monster.seascorpion;
 
-import com.wildmobsmod.entity.passive.goose.EntityGoose;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 
 public class ModelSeaScorpion extends ModelBase
 {
-	//fields
+	// fields
 	ModelRenderer head;
 	ModelRenderer body;
 	ModelRenderer tail1;
@@ -94,7 +91,7 @@ public class ModelSeaScorpion extends ModelBase
 	{
 		super.render(entity, f, f1, f2, f3, f4, f5);
 		setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-		EntitySeaScorpion entityseascorpion = (EntitySeaScorpion)entity;
+		EntitySeaScorpion entityseascorpion = (EntitySeaScorpion) entity;
 		head.render(f5);
 		body.render(f5);
 		tail1.render(f5);
@@ -113,11 +110,11 @@ public class ModelSeaScorpion extends ModelBase
 	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
 	{
 		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-		EntitySeaScorpion entityseascorpion = (EntitySeaScorpion)entity;
+		EntitySeaScorpion entityseascorpion = (EntitySeaScorpion) entity;
 		this.tail1.rotateAngleX = MathHelper.cos(f * 0.650F) * 0.6F * f1;
 		this.tail2.rotateAngleX = MathHelper.cos(f * 0.650F) * 0.6F * f1;
 		this.tail3.rotateAngleX = MathHelper.cos(f * 0.650F) * 0.6F * f1;
 		this.paddle1.rotateAngleY = (MathHelper.cos(f * 0.650F) * 0.8F * f1) + 0.7F;
-		this.paddle2.rotateAngleY = (MathHelper.cos(f * 0.650F + (float)Math.PI) * 0.8F * f1) - 0.7F;
+		this.paddle2.rotateAngleY = (MathHelper.cos(f * 0.650F + (float) Math.PI) * 0.8F * f1) - 0.7F;
 	}
 }

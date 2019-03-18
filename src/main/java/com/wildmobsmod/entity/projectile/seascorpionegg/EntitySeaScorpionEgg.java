@@ -1,5 +1,8 @@
 package com.wildmobsmod.entity.projectile.seascorpionegg;
 
+import com.wildmobsmod.entity.monster.seascorpion.EntitySeaScorpion;
+import com.wildmobsmod.items.WildMobsModItems;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.item.Item;
@@ -7,34 +10,31 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
-import com.wildmobsmod.entity.monster.seascorpion.EntitySeaScorpion;
-import com.wildmobsmod.items.WildMobsModItems;
-
 public class EntitySeaScorpionEgg extends EntityThrowable
 {
-	public EntitySeaScorpionEgg(World p_i1779_1_)
+	public EntitySeaScorpionEgg(World world)
 	{
-		super(p_i1779_1_);
+		super(world);
 	}
 
-	public EntitySeaScorpionEgg(World p_i1780_1_, EntityLivingBase p_i1780_2_)
+	public EntitySeaScorpionEgg(World world, EntityLivingBase thrower)
 	{
-		super(p_i1780_1_, p_i1780_2_);
+		super(world, thrower);
 	}
 
-	public EntitySeaScorpionEgg(World p_i1781_1_, double p_i1781_2_, double p_i1781_4_, double p_i1781_6_)
+	public EntitySeaScorpionEgg(World world, double xPos, double yPos, double zPos)
 	{
-		super(p_i1781_1_, p_i1781_2_, p_i1781_4_, p_i1781_6_);
+		super(world, xPos, yPos, zPos);
 	}
 
-	protected void onImpact(MovingObjectPosition p_70184_1_)
+	protected void onImpact(MovingObjectPosition pos)
 	{
-		if (p_70184_1_.entityHit != null)
+		if(pos.entityHit != null)
 		{
-			p_70184_1_.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), 0.0F);
+			pos.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), 0.0F);
 		}
 
-		if (!this.worldObj.isRemote)
+		if(!this.worldObj.isRemote)
 		{
 			EntitySeaScorpion entityseascorpion = new EntitySeaScorpion(this.worldObj);
 			entityseascorpion.setGrowingAge(-24000);
@@ -46,12 +46,12 @@ public class EntitySeaScorpionEgg extends EntityThrowable
 
 		String s = "iconcrack_" + Item.getIdFromItem(WildMobsModItems.seaScorpionEgg);
 
-		for (int j = 0; j < 8; ++j)
+		for(int j = 0; j < 8; ++j)
 		{
 			this.worldObj.spawnParticle(s, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
 		}
 
-		if (!this.worldObj.isRemote)
+		if(!this.worldObj.isRemote)
 		{
 			this.setDead();
 		}

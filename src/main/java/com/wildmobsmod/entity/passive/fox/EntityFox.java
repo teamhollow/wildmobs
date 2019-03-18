@@ -1,30 +1,21 @@
 package com.wildmobsmod.entity.passive.fox;
 
-
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
-
+import com.wildmobsmod.entity.ISkinnedEntity;
 import com.wildmobsmod.entity.ai.EntityAIMeatTempt;
-import com.wildmobsmod.entity.passive.bison.EntityBison;
-import com.wildmobsmod.entity.passive.deer.EntityDeer;
+import com.wildmobsmod.entity.passive.goose.EntityGoose;
 import com.wildmobsmod.entity.passive.mouse.EntityMouse;
 import com.wildmobsmod.items.WildMobsModItems;
-import com.wildmobsmod.main.MainRegistry;
+import com.wildmobsmod.main.WildMobsMod;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockColored;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackOnCollide;
-import net.minecraft.entity.ai.EntityAIBeg;
-import net.minecraft.entity.ai.EntityAIControlledByPlayer;
 import net.minecraft.entity.ai.EntityAIFollowParent;
 import net.minecraft.entity.ai.EntityAILeapAtTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
@@ -32,7 +23,6 @@ import net.minecraft.entity.ai.EntityAIMate;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIPanic;
 import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAITempt;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.passive.EntityAnimal;
@@ -48,43 +38,13 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.BiomeGenBase.TempCategory;
 import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.common.BiomeDictionary.Type;
-import net.minecraftforge.common.BiomeManager.BiomeType;
 
-public class EntityFox extends EntityAnimal{
-
-	@Override
-	protected void entityInit() {
-		super.entityInit();
-		this.dataWatcher.addObject(20, Byte.valueOf((byte)0));
-	}
-
-	public IEntityLivingData onSpawnWithEgg(IEntityLivingData entity)
+public class EntityFox extends EntityAnimal implements ISkinnedEntity
+{
+	public EntityFox(World world)
 	{
-		super.onSpawnWithEgg(entity);
-		int i = MathHelper.floor_double(this.posX);
-		int j = MathHelper.floor_double(this.posZ);
-		BiomeGenBase biome = worldObj.getBiomeGenForCoords(i, j);
-		ArrayList<BiomeDictionary.Type> biomeTypesList = new ArrayList<BiomeDictionary.Type>(Arrays.asList(BiomeDictionary.getTypesForBiome(worldObj.getBiomeGenForCoords(i, j))));
-		if (biome.getEnableSnow())
-		{
-			this.setSkin(1);
-		}
-		else if (biomeTypesList.contains(BiomeDictionary.Type.SANDY))
-		{
-			this.setSkin(2);
-		}
-		else
-		{
-			this.setSkin(0);
-		}
-		return entity;
-	}
-
-	public EntityFox(World par1World) {
-		super(par1World);
+		super(world);
 		this.setSize(0.51F, 0.68F);
 		this.getNavigator().setAvoidsWater(true);
 		this.tasks.addTask(0, new EntityAISwimming(this));
@@ -99,223 +59,228 @@ public class EntityFox extends EntityAnimal{
 		this.tasks.addTask(9, new EntityAILookIdle(this));
 		this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityMouse.class, 250, true));
 		this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityChicken.class, 250, true));
+		this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityGoose.class, 400, true));
 	}
 
-    public int getMaxSpawnedInChunk()
-    {
-        return 1;
-    }
+	public int getMaxSpawnedInChunk()
+	{
+		return WildMobsMod.FOX_CONFIG.getMaxPackSize();
+	}
 
-	public boolean isAIEnabled(){
+	protected void entityInit()
+	{
+		super.entityInit();
+		this.dataWatcher.addObject(20, Byte.valueOf((byte) 0));
+	}
+
+	public boolean isAIEnabled()
+	{
 		return true;
 	}
-	
-	protected void applyEntityAttributes(){
+
+	protected void applyEntityAttributes()
+	{
 		super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(8.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
+		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(8.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
 	}
 
-    public void writeEntityToNBT(NBTTagCompound entity)
-    {
-        super.writeEntityToNBT(entity);
-        entity.setInteger("Variant", this.getSkin());
-    }
+	public void writeEntityToNBT(NBTTagCompound nbt)
+	{
+		super.writeEntityToNBT(nbt);
+		nbt.setInteger("Variant", this.getSkin());
+	}
 
-    public void readEntityFromNBT(NBTTagCompound entity)
-    {
-        super.readEntityFromNBT(entity);
-        this.setSkin(entity.getInteger("Variant"));
-    }
+	public void readEntityFromNBT(NBTTagCompound nbt)
+	{
+		super.readEntityFromNBT(nbt);
+		this.setSkin(nbt.getInteger("Variant"));
+	}
 
-    public int getSkin()
-    {
-        return this.dataWatcher.getWatchableObjectByte(20);
-    }
+	public int getSkin()
+	{
+		return this.dataWatcher.getWatchableObjectByte(20);
+	}
 
-    public void setSkin(int entity)
-    {
-        this.dataWatcher.updateObject(20, Byte.valueOf((byte)entity));
-    }
-    
-    public void setAttackTarget(EntityLivingBase entity)
-    {
-        super.setAttackTarget(entity);
-    }
+	public void setSkin(int skinId)
+	{
+		this.dataWatcher.updateObject(20, Byte.valueOf((byte) skinId));
+	}
 
-    public boolean attackEntityAsMob(Entity p_70652_1_)
-    {
-    	return p_70652_1_.attackEntityFrom(DamageSource.causeMobDamage(this), 3.0F);
-    }
-    
-    public boolean attackEntityFrom(DamageSource p_70097_1_, float p_70097_2_)
-    {
-        if (this.isEntityInvulnerable())
-        {
-            return false;
-        }
-        else
-        {
-            return super.attackEntityFrom(p_70097_1_, p_70097_2_);
-        }
-    }
+	public boolean attackEntityAsMob(Entity target)
+	{
+		return target.attackEntityFrom(DamageSource.causeMobDamage(this), 3.0F);
+	}
 
-    protected void func_145780_a(int p_145780_1_, int p_145780_2_, int p_145780_3_, Block p_145780_4_)
-    {
-        this.playSound("mob.wolf.step", 0.15F, 1.0F);
-    }
+	public boolean attackEntityFrom(DamageSource source, float amount)
+	{
+		if(this.isEntityInvulnerable())
+		{
+			return false;
+		}
+		else
+		{
+			return super.attackEntityFrom(source, amount);
+		}
+	}
 
-    protected String getHurtSound()
-    {
-        return "mob.wolf.hurt";
-    }
+	// step sound
+	protected void func_145780_a(int x, int y, int z, Block stepBlock)
+	{
+		this.playSound("mob.wolf.step", 0.15F, 1.0F); //TODO: Own sound
+	}
 
-    protected String getDeathSound()
-    {
-        return "mob.wolf.death";
-    }
-    
-    protected float getSoundVolume()
-    {
-        return 0.4F;
-    }
-    
-    public float getEyeHeight()
-    {
-        return this.height * 0.8F;
-    }
-    
-    public boolean isBreedingItem(ItemStack entity)
-    {
-        return entity == null ? false : (!(entity.getItem() instanceof ItemFood) ? false : ((ItemFood)entity.getItem()).isWolfsFavoriteMeat());
-    }
+	protected String getHurtSound()
+	{
+		return "mob.wolf.hurt"; //TODO: Own sound
+	}
 
-    protected Item getDropItem()
-    {
-        return WildMobsModItems.fur;
-    }
+	protected String getDeathSound()
+	{
+		return "mob.wolf.death"; //TODO: Own sound
+	}
 
-    protected void dropFewItems(boolean f1, int f2)
-    {
-    	if (this.getSkin() > 2 && this.getSkin() < 5)
-    	{
-    		int j = this.rand.nextInt(3) + 1 + this.rand.nextInt(1 + f2);
+	protected float getSoundVolume()
+	{
+		return 0.4F;
+	}
 
-    		for (int k = 0; k < j; ++k)
-    		{
-    			if (MainRegistry.enableFur)
-    			{
-    				this.dropItem(WildMobsModItems.fur, 1);
-    			}
-    			else
-    			{
-    				this.dropItem(Items.leather, 1);
-    			}
-    		}
-    	}
-    	else
-    	{
-    		int j = this.rand.nextInt(2) + 1 + this.rand.nextInt(1 + f2);
+	public float getEyeHeight()
+	{
+		return this.height * 0.8F;
+	}
 
-    		for (int k = 0; k < j; ++k)
-    		{
-    			if (MainRegistry.enableFur)
-    			{
-    				this.dropItem(WildMobsModItems.fur, 1);
-    			}
-    			else
-    			{
-    				this.dropItem(Items.leather, 1);
-    			}
-    		}
-    	}
-    }
-    
-    public boolean interact(EntityPlayer p_70085_1_)
-    {
-    	ItemStack itemstack = p_70085_1_.inventory.getCurrentItem();
+	public boolean isBreedingItem(ItemStack stack)
+	{
+		return stack != null && stack.getItem() instanceof ItemFood && ((ItemFood) stack.getItem()).isWolfsFavoriteMeat();
+	}
 
-    	if (super.interact(p_70085_1_))
-    	{
-    		return true;
-    	}
-    	else if (!this.worldObj.isRemote)
-    	{
-    		if (itemstack != null && (itemstack.getItem() == WildMobsModItems.foxSpawnEgg || itemstack.getItem() == WildMobsModItems.arcticFoxSpawnEgg || itemstack.getItem() == WildMobsModItems.desertFoxSpawnEgg))
-    		{
-            	EntityFox entityageable = this.createChild(this);
-                entityageable.setGrowingAge(-24000);
-            	entityageable.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
-            	worldObj.spawnEntityInWorld(entityageable);
+	protected Item getDropItem()
+	{
+		return WildMobsModItems.fur;
+	}
 
-                if (itemstack.hasDisplayName())
-                {
-                    entityageable.setCustomNameTag(itemstack.getDisplayName());
-                }
+	protected void dropFewItems(boolean playerkill, int looting)
+	{
+		if(this.getSkin() > 2 && this.getSkin() < 5)
+		{
+			int j = this.rand.nextInt(3) + 1 + this.rand.nextInt(1 + looting);
 
-                if (!p_70085_1_.capabilities.isCreativeMode)
-                {
-                    --itemstack.stackSize;
+			for(int k = 0; k < j; ++k)
+			{
+				this.dropItem(WildMobsModItems.fur, 1);
+			}
+		}
+		else
+		{
+			int j = this.rand.nextInt(2) + 1 + this.rand.nextInt(1 + looting);
 
-                    if (itemstack.stackSize <= 0)
-                    {
-                        p_70085_1_.inventory.setInventorySlotContents(p_70085_1_.inventory.currentItem, (ItemStack)null);
-                    }
-                }
-    			return true;
-    		}
-    		else
-    		{
-    			return false;
-    		}
-    	}
-    	else
-    	{
-    		return false;
-    	}
-    }
+			for(int k = 0; k < j; ++k)
+			{
+				this.dropItem(WildMobsModItems.fur, 1);
+			}
+		}
+	}
 
-    /**
-     * Gets the name of this command sender (usually username, but possibly "Rcon")
-     */
-    public String getCommandSenderName()
-    {
-        if (this.hasCustomNameTag())
-        {
-            return this.getCustomNameTag();
-        }
-        else
-        {
-            int i = this.getSkin();
+	public boolean interact(EntityPlayer player)
+	{
+		ItemStack itemstack = player.inventory.getCurrentItem();
 
-            switch (i)
-            {
-                case 0:
-                default:
-                    return StatCollector.translateToLocal("entity.wildmobsmod.Fox.name");
-                case 1:
-                    return StatCollector.translateToLocal("entity.wildmobsmod.ArcticFox.name");
-                case 2:
-                    return StatCollector.translateToLocal("entity.wildmobsmod.DesertFox.name");
-            }
-        }
-    }
+		if(super.interact(player))
+		{
+			return true;
+		}
+		else if(!this.worldObj.isRemote)
+		{
+			if(itemstack != null && (itemstack.getItem() == WildMobsModItems.foxSpawnEgg || itemstack.getItem() == WildMobsModItems.arcticFoxSpawnEgg || itemstack.getItem() == WildMobsModItems.desertFoxSpawnEgg))
+			{
+				EntityFox entityageable = this.createChild(this);
+				entityageable.setGrowingAge(-24000);
+				entityageable.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
+				worldObj.spawnEntityInWorld(entityageable);
 
-    public EntityFox createChild(EntityAgeable p_90011_1_)
-    {
-		boolean flag = MainRegistry.enableFoxUnnaturalVariants;
-        EntityFox entityfox = (EntityFox)p_90011_1_;
-        EntityFox entityfox1 = new EntityFox(this.worldObj);
-        int i = entityfox.getSkin();
-        if (this.rand.nextInt(12) == 0 && flag)
-        {
-            entityfox1.setSkin(this.worldObj.rand.nextInt(2) + 3);
-        }
-        else
-        {
-        	entityfox1.setSkin(i);
-        }
-        return entityfox1;
-    }
+				if(itemstack.hasDisplayName())
+				{
+					entityageable.setCustomNameTag(itemstack.getDisplayName());
+				}
+
+				if(!player.capabilities.isCreativeMode)
+				{
+					--itemstack.stackSize;
+
+					if(itemstack.stackSize <= 0)
+					{
+						player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack) null);
+					}
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String getCommandSenderName()
+	{
+		if(this.hasCustomNameTag())
+		{
+			return this.getCustomNameTag();
+		}
+		else
+		{
+			int i = this.getSkin();
+
+			switch(i)
+			{
+				case 0:
+				default:
+					return StatCollector.translateToLocal("entity.wildmobsmod.Fox.name");
+				case 1:
+					return StatCollector.translateToLocal("entity.wildmobsmod.ArcticFox.name");
+				case 2:
+					return StatCollector.translateToLocal("entity.wildmobsmod.DesertFox.name");
+			}
+		}
+	}
+
+	public EntityFox createChild(EntityAgeable entity)
+	{
+		EntityFox entityfox = (EntityFox) entity;
+		EntityFox entityfox1 = new EntityFox(this.worldObj);
+		int i = entityfox.getSkin();
+		if(this.rand.nextInt(12) == 0 && WildMobsMod.enableFoxUnnaturalVariants)
+		{
+			entityfox1.setSkin(this.worldObj.rand.nextInt(2) + 3);
+		}
+		else
+		{
+			entityfox1.setSkin(i);
+		}
+		return entityfox1;
+	}
+
+	public IEntityLivingData onSpawnWithEgg(IEntityLivingData data)
+	{
+		super.onSpawnWithEgg(data);
+		int i = MathHelper.floor_double(this.posX);
+		int j = MathHelper.floor_double(this.posZ);
+		BiomeGenBase biome = worldObj.getBiomeGenForCoords(i, j);
+		if(biome.getEnableSnow())
+		{
+			this.setSkin(1);
+		}
+		else if(Arrays.asList(BiomeDictionary.getTypesForBiome(worldObj.getBiomeGenForCoords(i, j))).contains(BiomeDictionary.Type.SANDY))
+		{
+			this.setSkin(2);
+		}
+		else if(this.rand.nextInt(12) == 0 && WildMobsMod.enableFoxUnnaturalVariants)
+		{
+			this.setSkin(this.worldObj.rand.nextInt(2) + 3);
+		}
+		else
+		{
+			this.setSkin(0);
+		}
+		return data;
+	}
 
 }

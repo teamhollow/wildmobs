@@ -11,137 +11,119 @@ import net.minecraft.world.World;
 
 public class EntityAIWMOcelotSit extends EntityAIBase
 {
-    private final EntityWMOcelot field_151493_a;
-    private final double field_151491_b;
-    private int field_151492_c;
-    private int field_151489_d;
-    private int field_151490_e;
-    private int field_151487_f;
-    private int field_151488_g;
-    private int field_151494_h;
-    private static final String __OBFID = "CL_00001601";
+	private final EntityWMOcelot theOcelot;
+	private final double speed;
+	private int boredom;
+	private int sitTime;
+	private int initiative;
+	private int targetX;
+	private int targetY;
+	private int targetZ;
 
-    public EntityAIWMOcelotSit(EntityWMOcelot p_i45315_1_, double p_i45315_2_)
-    {
-        this.field_151493_a = p_i45315_1_;
-        this.field_151491_b = p_i45315_2_;
-        this.setMutexBits(5);
-    }
+	public EntityAIWMOcelotSit(EntityWMOcelot ocelot, double speed)
+	{
+		this.theOcelot = ocelot;
+		this.speed = speed;
+		this.setMutexBits(5);
+	}
 
-    /**
-     * Returns whether the EntityAIBase should begin execution.
-     */
-    public boolean shouldExecute()
-    {
-        return this.field_151493_a.isTamed() && !this.field_151493_a.isSitting() && this.field_151493_a.getRNG().nextDouble() <= 0.006500000134110451D && this.func_151485_f();
-    }
+	/**
+	 * Returns whether the EntityAIBase should begin execution.
+	 */
+	public boolean shouldExecute()
+	{
+		return this.theOcelot.isTamed() && !this.theOcelot.isSitting() && this.theOcelot.getRNG().nextDouble() <= 0.006500000134110451D && this.findTargetCoords();
+	}
 
-    /**
-     * Returns whether an in-progress EntityAIBase should continue executing
-     */
-    public boolean continueExecuting()
-    {
-        return this.field_151492_c <= this.field_151490_e && this.field_151489_d <= 60 && this.func_151486_a(this.field_151493_a.worldObj, this.field_151487_f, this.field_151488_g, this.field_151494_h);
-    }
+	/**
+	 * Returns whether an in-progress EntityAIBase should continue executing
+	 */
+	public boolean continueExecuting()
+	{
+		return this.boredom <= this.initiative && this.sitTime <= 60 && this.willSitOn(this.theOcelot.worldObj, this.targetX, this.targetY, this.targetZ);
+	}
 
-    /**
-     * Execute a one shot task or start executing a continuous task
-     */
-    public void startExecuting()
-    {
-        this.field_151493_a.getNavigator().tryMoveToXYZ((double)((float)this.field_151487_f) + 0.5D, (double)(this.field_151488_g + 1), (double)((float)this.field_151494_h) + 0.5D, this.field_151491_b);
-        this.field_151492_c = 0;
-        this.field_151489_d = 0;
-        this.field_151490_e = this.field_151493_a.getRNG().nextInt(this.field_151493_a.getRNG().nextInt(1200) + 1200) + 1200;
-        this.field_151493_a.func_70907_r().setSitting(false);
-    }
+	/**
+	 * Execute a one shot task or start executing a continuous task
+	 */
+	public void startExecuting()
+	{
+		this.theOcelot.getNavigator().tryMoveToXYZ(this.targetX + 0.5D, this.targetY + 1, this.targetZ + 0.5D, this.speed);
+		this.boredom = 0;
+		this.sitTime = 0;
+		this.initiative = this.theOcelot.getRNG().nextInt(this.theOcelot.getRNG().nextInt(1200) + 1200) + 1200;
+		this.theOcelot.func_70907_r().setSitting(false);
+	}
 
-    /**
-     * Resets the task
-     */
-    public void resetTask()
-    {
-        this.field_151493_a.setSitting(false);
-    }
+	/**
+	 * Resets the task
+	 */
+	public void resetTask()
+	{
+		this.theOcelot.setSitting(false);
+	}
 
-    /**
-     * Updates the task
-     */
-    public void updateTask()
-    {
-        ++this.field_151492_c;
-        this.field_151493_a.func_70907_r().setSitting(false);
+	/**
+	 * Updates the task
+	 */
+	public void updateTask()
+	{
+		++this.boredom;
+		this.theOcelot.func_70907_r().setSitting(false);
+		if(this.theOcelot.getDistanceSq((double) this.targetX, (double) (this.targetY + 1), (double) this.targetZ) > 1.0D)
+		{
+			this.theOcelot.setSitting(false);
+			this.theOcelot.getNavigator().tryMoveToXYZ((double) ((float) this.targetX) + 0.5D, (double) (this.targetY + 1), (double) ((float) this.targetZ) + 0.5D, this.speed);
+			++this.sitTime;
+		}
+		else if(!this.theOcelot.isSitting())
+		{
+			this.theOcelot.setSitting(true);
+		}
+		else
+		{
+			--this.sitTime;
+		}
+	}
 
-        if (this.field_151493_a.getDistanceSq((double)this.field_151487_f, (double)(this.field_151488_g + 1), (double)this.field_151494_h) > 1.0D)
-        {
-            this.field_151493_a.setSitting(false);
-            this.field_151493_a.getNavigator().tryMoveToXYZ((double)((float)this.field_151487_f) + 0.5D, (double)(this.field_151488_g + 1), (double)((float)this.field_151494_h) + 0.5D, this.field_151491_b);
-            ++this.field_151489_d;
-        }
-        else if (!this.field_151493_a.isSitting())
-        {
-            this.field_151493_a.setSitting(true);
-        }
-        else
-        {
-            --this.field_151489_d;
-        }
-    }
+	private boolean findTargetCoords()
+	{
+		int i = (int) this.theOcelot.posY;
+		double d0 = Double.MAX_VALUE;
+		for(int j = (int) this.theOcelot.posX - 8; (double) j < this.theOcelot.posX + 8.0D; ++j)
+		{
+			for(int k = (int) this.theOcelot.posZ - 8; (double) k < this.theOcelot.posZ + 8.0D; ++k)
+			{
+				if(this.willSitOn(this.theOcelot.worldObj, j, i, k) && this.theOcelot.worldObj.isAirBlock(j, i + 1, k))
+				{
+					double d1 = this.theOcelot.getDistanceSq((double) j, (double) i, (double) k);
+					if(d1 < d0)
+					{
+						this.targetX = j;
+						this.targetY = i;
+						this.targetZ = k;
+						d0 = d1;
+					}
+				}
+			}
+		}
+		return d0 < Double.MAX_VALUE;
+	}
 
-    private boolean func_151485_f()
-    {
-        int i = (int)this.field_151493_a.posY;
-        double d0 = 2.147483647E9D;
-
-        for (int j = (int)this.field_151493_a.posX - 8; (double)j < this.field_151493_a.posX + 8.0D; ++j)
-        {
-            for (int k = (int)this.field_151493_a.posZ - 8; (double)k < this.field_151493_a.posZ + 8.0D; ++k)
-            {
-                if (this.func_151486_a(this.field_151493_a.worldObj, j, i, k) && this.field_151493_a.worldObj.isAirBlock(j, i + 1, k))
-                {
-                    double d1 = this.field_151493_a.getDistanceSq((double)j, (double)i, (double)k);
-
-                    if (d1 < d0)
-                    {
-                        this.field_151487_f = j;
-                        this.field_151488_g = i;
-                        this.field_151494_h = k;
-                        d0 = d1;
-                    }
-                }
-            }
-        }
-
-        return d0 < 2.147483647E9D;
-    }
-
-    private boolean func_151486_a(World p_151486_1_, int p_151486_2_, int p_151486_3_, int p_151486_4_)
-    {
-        Block block = p_151486_1_.getBlock(p_151486_2_, p_151486_3_, p_151486_4_);
-        int l = p_151486_1_.getBlockMetadata(p_151486_2_, p_151486_3_, p_151486_4_);
-
-        if (block == Blocks.chest)
-        {
-            TileEntityChest tileentitychest = (TileEntityChest)p_151486_1_.getTileEntity(p_151486_2_, p_151486_3_, p_151486_4_);
-
-            if (tileentitychest.numPlayersUsing < 1)
-            {
-                return true;
-            }
-        }
-        else
-        {
-            if (block == Blocks.lit_furnace)
-            {
-                return true;
-            }
-
-            if (block == Blocks.bed && !BlockBed.isBlockHeadOfBed(l))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+	private boolean willSitOn(World world, int x, int y, int z)
+	{
+		Block block = world.getBlock(x, y, z);
+		int l = world.getBlockMetadata(x, y, z);
+		if(block == Blocks.chest)
+		{
+			TileEntityChest tileentitychest = (TileEntityChest) world.getTileEntity(x, y, z);
+			if(tileentitychest.numPlayersUsing < 1) return true;
+		}
+		else
+		{
+			if(block == Blocks.lit_furnace) return true;
+			if(block == Blocks.bed && !BlockBed.isBlockHeadOfBed(l)) return true;
+		}
+		return false;
+	}
 }

@@ -1,5 +1,9 @@
 package com.wildmobsmod.entity.passive.ocelot;
 
+import org.lwjgl.opengl.GL11;
+
+import com.wildmobsmod.main.WildMobsMod;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.model.ModelBase;
@@ -8,124 +12,86 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
-
-import com.wildmobsmod.lib.Strings;
 
 @SideOnly(Side.CLIENT)
 public class RenderWMOcelot extends RenderLiving
 {
-    private static final ResourceLocation blackOcelotTextures = new ResourceLocation("textures/entity/cat/black.png");
-    private static final ResourceLocation ocelotTextures = new ResourceLocation("textures/entity/cat/ocelot.png");
-    private static final ResourceLocation redOcelotTextures = new ResourceLocation("textures/entity/cat/red.png");
-    private static final ResourceLocation siameseOcelotTextures = new ResourceLocation("textures/entity/cat/siamese.png");
-    private static final ResourceLocation tabbyOcelotTextures = new ResourceLocation(Strings.MODID + ":textures/entity/cat/tabby.png");
-    private static final ResourceLocation grayOcelotTextures = new ResourceLocation(Strings.MODID + ":textures/entity/cat/gray.png");
-    private static final ResourceLocation whiteOcelotTextures = new ResourceLocation(Strings.MODID + ":textures/entity/cat/white.png");
-    private static final String __OBFID = "CL_00001017";
+	private static final ResourceLocation blackOcelotTextures = new ResourceLocation("textures/entity/cat/black.png");
+	private static final ResourceLocation ocelotTextures = new ResourceLocation("textures/entity/cat/ocelot.png");
+	private static final ResourceLocation redOcelotTextures = new ResourceLocation("textures/entity/cat/red.png");
+	private static final ResourceLocation siameseOcelotTextures = new ResourceLocation("textures/entity/cat/siamese.png");
+	private static final ResourceLocation tabbyOcelotTextures = new ResourceLocation(WildMobsMod.MODID + ":textures/entity/cat/tabby.png");
+	private static final ResourceLocation grayOcelotTextures = new ResourceLocation(WildMobsMod.MODID + ":textures/entity/cat/gray.png");
+	private static final ResourceLocation whiteOcelotTextures = new ResourceLocation(WildMobsMod.MODID + ":textures/entity/cat/white.png");
 
-    public RenderWMOcelot(ModelBase p_i1264_1_, float p_i1264_2_)
-    {
-        super(p_i1264_1_, p_i1264_2_);
-    }
+	public RenderWMOcelot(ModelBase model, float shadowSize)
+	{
+		super(model, shadowSize);
+	}
 
-    /**
-     * Actually renders the given argument. This is a synthetic bridge method, always casting down its argument and then
-     * handing it off to a worker function which does the actual work. In all probabilty, the class Render is generic
-     * (Render<T extends Entity) and this method has signature public void func_76986_a(T entity, double d, double d1,
-     * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
-     */
-    public void doRender(EntityWMOcelot p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_)
-    {
-        super.doRender((EntityLiving)p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
-    }
+	public void doRender(EntityWMOcelot ocelot, double x, double y, double z, float f1, float f2)
+	{
+		super.doRender(ocelot, x, y, z, f1, f2);
+	}
 
-    /**
-     * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
-     */
-    protected ResourceLocation getEntityTexture(EntityWMOcelot p_110775_1_)
-    {
-        switch (p_110775_1_.getTameSkin())
-        {
-            case 0:
-            default:
-                return ocelotTextures;
-            case 1:
-                return tabbyOcelotTextures;
-            case 2:
-                return blackOcelotTextures;
-            case 3:
-                return redOcelotTextures;
-            case 4:
-                return siameseOcelotTextures;
-            case 5:
-                return grayOcelotTextures;
-            case 6:
-                return whiteOcelotTextures;
-        }
-    }
+	protected ResourceLocation getEntityTexture(EntityWMOcelot ocelot)
+	{
+		switch(ocelot.getSkin())
+		{
+			case 0:
+			default:
+				return ocelotTextures;
+			case 1:
+				return tabbyOcelotTextures;
+			case 2:
+				return blackOcelotTextures;
+			case 3:
+				return redOcelotTextures;
+			case 4:
+				return siameseOcelotTextures;
+			case 5:
+				return grayOcelotTextures;
+			case 6:
+				return whiteOcelotTextures;
+		}
+	}
 
-    /**
-     * Allows the render to do any OpenGL state modifications necessary before the model is rendered. Args:
-     * entityLiving, partialTickTime
-     */
-    protected void preRenderCallback(EntityWMOcelot p_77041_1_, float p_77041_2_)
-    {
-        super.preRenderCallback(p_77041_1_, p_77041_2_);
+	protected void preRenderCallback(EntityWMOcelot ocelot, float partialTickTime)
+	{
+		super.preRenderCallback(ocelot, partialTickTime);
 
-        if (p_77041_1_.isTamed())
-        {
-            GL11.glScalef(0.8F, 0.8F, 0.8F);
-        }
-    }
+		if(ocelot.isTamed())
+		{
+			GL11.glScalef(0.8F, 0.8F, 0.8F);
+		}
+	}
 
-    /**
-     * Actually renders the given argument. This is a synthetic bridge method, always casting down its argument and then
-     * handing it off to a worker function which does the actual work. In all probabilty, the class Render is generic
-     * (Render<T extends Entity) and this method has signature public void func_76986_a(T entity, double d, double d1,
-     * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
-     */
-    public void doRender(EntityLiving p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_)
-    {
-        this.doRender((EntityWMOcelot)p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
-    }
+	@Override
+	public void doRender(EntityLiving living, double x, double y, double z, float f1, float f2)
+	{
+		this.doRender((EntityWMOcelot) living, x, y, z, f1, f2);
+	}
 
-    /**
-     * Allows the render to do any OpenGL state modifications necessary before the model is rendered. Args:
-     * entityLiving, partialTickTime
-     */
-    protected void preRenderCallback(EntityLivingBase p_77041_1_, float p_77041_2_)
-    {
-        this.preRenderCallback((EntityWMOcelot)p_77041_1_, p_77041_2_);
-    }
+	@Override
+	protected void preRenderCallback(EntityLivingBase entityLiving, float partialTickTime)
+	{
+		this.preRenderCallback((EntityWMOcelot) entityLiving, partialTickTime);
+	}
 
-    /**
-     * Actually renders the given argument. This is a synthetic bridge method, always casting down its argument and then
-     * handing it off to a worker function which does the actual work. In all probabilty, the class Render is generic
-     * (Render<T extends Entity) and this method has signature public void func_76986_a(T entity, double d, double d1,
-     * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
-     */
-    public void doRender(EntityLivingBase p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_)
-    {
-        this.doRender((EntityWMOcelot)p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
-    }
+	@Override
+	public void doRender(EntityLivingBase living, double x, double y, double z, float f1, float f2)
+	{
+		this.doRender((EntityWMOcelot) living, x, y, z, f1, f2);
+	}
 
-    /**
-     * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
-     */
-    protected ResourceLocation getEntityTexture(Entity p_110775_1_)
-    {
-        return this.getEntityTexture((EntityWMOcelot)p_110775_1_);
-    }
+	@Override
+	protected ResourceLocation getEntityTexture(Entity entity)
+	{
+		return this.getEntityTexture((EntityWMOcelot) entity);
+	}
 
-    /**
-     * Actually renders the given argument. This is a synthetic bridge method, always casting down its argument and then
-     * handing it off to a worker function which does the actual work. In all probabilty, the class Render is generic
-     * (Render<T extends Entity) and this method has signature public void func_76986_a(T entity, double d, double d1,
-     * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
-     */
-    public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_)
-    {
-        this.doRender((EntityWMOcelot)p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
-    }
+	public void doRender(Entity entity, double x, double y, double z, float f1, float f2)
+	{
+		this.doRender((EntityWMOcelot) entity, x, y, z, f1, f2);
+	}
 }

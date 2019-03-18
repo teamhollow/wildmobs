@@ -11,14 +11,13 @@ import net.minecraft.world.World;
 
 public class EntityAIEatCrops extends EntityAIBase
 {
-	private EntityMouse field_151500_b;
-	private World field_151501_c;
-	private static final String __OBFID = "CL_00001582";
+	private EntityMouse mouse;
+	private World world;
 
-	public EntityAIEatCrops(EntityMouse p_i45314_1_)
+	public EntityAIEatCrops(EntityMouse mouse)
 	{
-		this.field_151500_b = p_i45314_1_;
-		this.field_151501_c = p_i45314_1_.worldObj;
+		this.mouse = mouse;
+		this.world = mouse.worldObj;
 		this.setMutexBits(7);
 	}
 
@@ -27,24 +26,15 @@ public class EntityAIEatCrops extends EntityAIBase
 	 */
 	public boolean shouldExecute()
 	{
-		if (this.field_151500_b.getRNG().nextInt(25) != 0)
+		if(this.mouse.getRNG().nextInt(25) != 0) return false;
+		if(this.mouse.hunger <= 0)
 		{
-			return false;
+			int i = MathHelper.floor_double(this.mouse.posX);
+			int j = MathHelper.floor_double(this.mouse.posY);
+			int k = MathHelper.floor_double(this.mouse.posZ);
+			return this.world.getBlock(i, j - 1, k) == Blocks.farmland;
 		}
-		else
-		{
-			if (this.field_151500_b.hunger <= 0)
-			{
-				int i = MathHelper.floor_double(this.field_151500_b.posX);
-				int j = MathHelper.floor_double(this.field_151500_b.posY);
-				int k = MathHelper.floor_double(this.field_151500_b.posZ);
-				return this.field_151501_c.getBlock(i, j - 1, k) == Blocks.farmland;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		return false;
 	}
 
 	/**
@@ -52,16 +42,14 @@ public class EntityAIEatCrops extends EntityAIBase
 	 */
 	public void startExecuting()
 	{
-		this.field_151501_c.setEntityState(this.field_151500_b, (byte)10);
-		this.field_151500_b.getNavigator().clearPathEntity();
+		this.world.setEntityState(this.mouse, (byte) 10);
+		this.mouse.getNavigator().clearPathEntity();
 	}
 
 	/**
 	 * Resets the task
 	 */
-	public void resetTask()
-	{
-	}
+	public void resetTask() {}
 
 	/**
 	 * Returns whether an in-progress EntityAIBase should continue executing
@@ -76,20 +64,16 @@ public class EntityAIEatCrops extends EntityAIBase
 	 */
 	public void updateTask()
 	{
-		int i = MathHelper.floor_double(this.field_151500_b.posX);
-		int j = MathHelper.floor_double(this.field_151500_b.posY);
-		int k = MathHelper.floor_double(this.field_151500_b.posZ);
-
-		if (this.field_151501_c.getBlock(i, j - 1, k) == Blocks.farmland && this.field_151501_c.getBlock(i, j, k) instanceof IGrowable)
+		int i = MathHelper.floor_double(this.mouse.posX);
+		int j = MathHelper.floor_double(this.mouse.posY);
+		int k = MathHelper.floor_double(this.mouse.posZ);
+		if(this.world.getBlock(i, j - 1, k) == Blocks.farmland && this.world.getBlock(i, j, k) instanceof IGrowable && this.world.getGameRules().getGameRuleBooleanValue("mobGriefing"))
 		{
-			if (this.field_151501_c.getGameRules().getGameRuleBooleanValue("mobGriefing"))
-			{
-				this.field_151501_c.playAuxSFX(2001, i, j , k, Block.getIdFromBlock(Blocks.grass));
-				this.field_151501_c.setBlock(i, j, k, Blocks.air, 0, 2);
-				this.field_151501_c.setBlock(i, j - 1, k, Blocks.dirt, 0, 2);
-				this.field_151500_b.setMateCounter(((EntityMouse) this.field_151500_b).getMateCounter() + 1);
-				this.field_151500_b.hunger = 200;
-			}
+			this.world.playAuxSFX(2001, i, j, k, Block.getIdFromBlock(Blocks.grass));
+			this.world.setBlockToAir(i, j, k);
+			this.world.setBlock(i, j - 1, k, Blocks.dirt, 0, 2);
+			this.mouse.setMateCounter(((EntityMouse) this.mouse).getMateCounter() + 1);
+			this.mouse.hunger = 200;
 		}
 	}
 }

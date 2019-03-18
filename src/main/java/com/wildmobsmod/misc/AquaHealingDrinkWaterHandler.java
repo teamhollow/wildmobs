@@ -1,30 +1,34 @@
 package com.wildmobsmod.misc;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.init.Items;
-import net.minecraft.util.MathHelper;
-import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
-
-import com.wildmobsmod.main.MainRegistry;
+import com.wildmobsmod.main.WildMobsMod;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 
 public class AquaHealingDrinkWaterHandler
 {
 	@SubscribeEvent
-	public void OnFinnishDrinking(PlayerUseItemEvent.Finish event) 
+	public void OnFinnishDrinking(PlayerUseItemEvent.Finish event)
 	{
-		if(event.item.getItem() == Items.potionitem && (event.item.getItem().getDamage(event.item) == 0 || event.item.getItem().getDamage(event.item) == 64 || event.item.getItem().getDamage(event.item) == 16) && event.entityLiving.isPotionActive(MainRegistry.aquaHealingID) == true && event.entityLiving.isWet() == false) 
+		EntityLivingBase living = event.entityLiving;
+		ItemStack stack = event.item;
+		Item item;
+		int meta;
+		if(living != null && !living.worldObj.isRemote && stack != null && (item = stack.getItem()) == Items.potionitem && ((meta = item.getDamage(stack)) == 0 || meta == 64 || meta == 16) && living.isPotionActive(WildMobsMod.aquaHealingID) && !living.isWet())
 		{
-			if (event.entityLiving.getHealth() < event.entityLiving.getMaxHealth() - 1)
+			if(living.getHealth() < living.getMaxHealth() - 1)
 			{
-				event.entityLiving.heal(2.0F);
+				living.heal(2.0F);
 			}
 			else
 			{
-				if (event.entityLiving.getHealth() < event.entityLiving.getMaxHealth())
+				if(living.getHealth() < living.getMaxHealth())
 				{
-					event.entityLiving.heal(1.0F);
+					living.heal(1.0F);
 				}
 			}
 		}

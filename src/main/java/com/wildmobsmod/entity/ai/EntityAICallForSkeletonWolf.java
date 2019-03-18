@@ -11,43 +11,39 @@ import net.minecraft.util.AxisAlignedBB;
 
 public class EntityAICallForSkeletonWolf extends EntityAITarget
 {
-    private int field_142052_b;
+	public EntityAICallForSkeletonWolf(EntityCreature creature)
+	{
+		super(creature, false);
+		this.setMutexBits(1);
+	}
 
-    public EntityAICallForSkeletonWolf(EntityCreature p_i1660_1_)
-    {
-        super(p_i1660_1_, false);
-        this.setMutexBits(1);
-    }
+	/**
+	 * Returns whether the EntityAIBase should begin execution.
+	 */
+	public boolean shouldExecute()
+	{
+		return true;
+	}
 
-    /**
-     * Returns whether the EntityAIBase should begin execution.
-     */
-    public boolean shouldExecute()
-    {
-        return true;
-    }
-
-    /**
-     * Execute a one shot task or start executing a continuous task
-     */
-    public void startExecuting()
-    {
-        if (this.taskOwner.getAttackTarget() != null)
-        {
-            List list = this.taskOwner.worldObj.getEntitiesWithinAABB(EntitySkeletonWolf.class, AxisAlignedBB.getBoundingBox(this.taskOwner.posX, this.taskOwner.posY, this.taskOwner.posZ, this.taskOwner.posX + 1.0D, this.taskOwner.posY + 1.0D, this.taskOwner.posZ + 1.0D).expand(20.0D, 10.0D, 20.0D));
-            Iterator iterator = list.iterator();
-
-            while (iterator.hasNext())
-            {
-                EntityCreature entitycreature = (EntityCreature)iterator.next();
-
-                if (this.taskOwner != entitycreature && entitycreature.getAttackTarget() == null && !entitycreature.isOnSameTeam(this.taskOwner.getAITarget()) && ((EntitySkeletonWolf)entitycreature).entityToFollow == this.taskOwner)
-                {
-                    entitycreature.setAttackTarget(this.taskOwner.getAITarget());
-                }
-            }
-        }
-
-        super.startExecuting();
-    }
+	/**
+	 * Execute a one shot task or start executing a continuous task
+	 */
+	public void startExecuting()
+	{
+		if(this.taskOwner.getAttackTarget() != null)
+		{
+			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(this.taskOwner.posX, this.taskOwner.posY, this.taskOwner.posZ, this.taskOwner.posX + 1.0D, this.taskOwner.posY + 1.0D, this.taskOwner.posZ + 1.0D).expand(20.0D, 10.0D, 20.0D);
+			List list = this.taskOwner.worldObj.getEntitiesWithinAABB(EntitySkeletonWolf.class, aabb);
+			Iterator iterator = list.iterator();
+			while(iterator.hasNext())
+			{
+				EntityCreature entitycreature = (EntityCreature) iterator.next();
+				if(this.taskOwner != entitycreature && entitycreature.getAttackTarget() == null && !entitycreature.isOnSameTeam(this.taskOwner.getAITarget()) && ((EntitySkeletonWolf) entitycreature).entityToFollow == this.taskOwner)
+				{
+					entitycreature.setAttackTarget(this.taskOwner.getAITarget());
+				}
+			}
+		}
+		super.startExecuting();
+	}
 }

@@ -1,192 +1,161 @@
 package com.wildmobsmod.entity.monster.zomgus;
 
+import com.wildmobsmod.main.WildMobsMod;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelZombieVillager;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.util.ResourceLocation;
-
-import com.wildmobsmod.lib.Strings;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderZomgus extends RenderBiped
 {
-    private static final ResourceLocation zomgusTextures = new ResourceLocation(Strings.MODID + ":textures/entity/zombie/zomgus.png");
-    private ModelBiped field_82434_o;
-    private ModelZomgus zomgusVillagerModel;
-    protected ModelBiped field_82437_k;
-    protected ModelBiped field_82435_l;
-    protected ModelBiped field_82436_m;
-    protected ModelBiped field_82433_n;
-    private int field_82431_q = 1;
-    private static final String __OBFID = "CL_00001037";
+	private static final ResourceLocation zomgusTextures = new ResourceLocation(WildMobsMod.MODID + ":textures/entity/zombie/zomgus.png");
+	private ModelBiped modelBiped;
+	private ModelZomgus zomgusVillagerModel;
+	protected ModelBiped modelBiped1;
+	protected ModelBiped modelBiped2;
+	protected ModelBiped modelZombieVillager1;
+	protected ModelBiped modelZombieVillager2;
+	private int field_82431_q = 1;
 
-    public RenderZomgus()
-    {
-        super(new ModelZomgus(), 0.5F, 1.0F);
-        this.field_82434_o = this.modelBipedMain;
-        this.zomgusVillagerModel = new ModelZomgus();
-    }
+	public RenderZomgus()
+	{
+		super(new ModelZomgus(), 0.5F, 1.0F);
+		this.modelBiped = this.modelBipedMain;
+		this.zomgusVillagerModel = new ModelZomgus();
+	}
 
-    protected void func_82421_b()
-    {
-        this.field_82423_g = new ModelZomgus(1.0F, 0.0F, true);
-        this.field_82425_h = new ModelZomgus(0.5F, 0.0F, true);
-        this.field_82437_k = this.field_82423_g;
-        this.field_82435_l = this.field_82425_h;
-    }
+	@Override
+	protected void func_82421_b()
+	{
+		this.field_82423_g = new ModelZomgus(1.0F, 0.0F, true);
+		this.field_82425_h = new ModelZomgus(0.5F, 0.0F, true);
+		this.modelBiped1 = this.field_82423_g;
+		this.modelBiped2 = this.field_82425_h;
+	}
 
-    /**
-     * Queries whether should render the specified pass or not.
-     */
-    protected int shouldRenderPass(EntityZombie p_77032_1_, int p_77032_2_, float p_77032_3_)
-    {
-        this.func_82427_a(p_77032_1_);
-        return super.shouldRenderPass((EntityLiving)p_77032_1_, p_77032_2_, p_77032_3_);
-    }
+	protected int shouldRenderPass(EntityZomgus zomgus, int pass, float partialTickTime)
+	{
+		this.setModel(zomgus);
+		return super.shouldRenderPass((EntityLiving) zomgus, pass, partialTickTime);
+	}
 
-    /**
-     * Actually renders the given argument. This is a synthetic bridge method, always casting down its argument and then
-     * handing it off to a worker function which does the actual work. In all probabilty, the class Render is generic
-     * (Render<T extends Entity) and this method has signature public void func_76986_a(T entity, double d, double d1,
-     * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
-     */
-    public void doRender(EntityZombie p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_)
-    {
-        this.func_82427_a(p_76986_1_);
-        super.doRender((EntityLiving)p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
-    }
-    
-    protected ResourceLocation getEntityTexture(EntityZombie p_110775_1_)
-    {
-        return zomgusTextures;
-    }
-    
-    protected void renderEquippedItems(EntityZombie p_77029_1_, float p_77029_2_)
-    {
-        this.func_82427_a(p_77029_1_);
-        super.renderEquippedItems((EntityLiving)p_77029_1_, p_77029_2_);
-    }
+	public void doRender(EntityZomgus zomgus, double x, double y, double z, float f1, float f2)
+	{
+		this.setModel(zomgus);
+		super.doRender((EntityLiving) zomgus, x, y, z, f1, f2);
+	}
 
-    private void func_82427_a(EntityZombie p_82427_1_)
-    {
-        if (p_82427_1_.isVillager())
-        {
-            if (this.field_82431_q != this.zomgusVillagerModel.func_82897_a())
-            {
-                this.zomgusVillagerModel = new ModelZomgus();
-                this.field_82431_q = this.zomgusVillagerModel.func_82897_a();
-                this.field_82436_m = new ModelZombieVillager(1.0F, 0.0F, true);
-                this.field_82433_n = new ModelZombieVillager(0.5F, 0.0F, true);
-            }
+	protected ResourceLocation getEntityTexture(EntityZomgus zomgus)
+	{
+		return zomgusTextures;
+	}
 
-            this.mainModel = this.zomgusVillagerModel;
-            this.field_82423_g = this.field_82436_m;
-            this.field_82425_h = this.field_82433_n;
-        }
-        else
-        {
-            this.mainModel = this.field_82434_o;
-            this.field_82423_g = this.field_82437_k;
-            this.field_82425_h = this.field_82435_l;
-        }
+	protected void renderEquippedItems(EntityZomgus zomgus, float scale)
+	{
+		this.setModel(zomgus);
+		super.renderEquippedItems(zomgus, scale);
+	}
 
-        this.modelBipedMain = (ModelBiped)this.mainModel;
-    }
+	private void setModel(EntityZomgus zomgus)
+	{
+		if(zomgus.isVillager())
+		{
+			if(this.field_82431_q != this.zomgusVillagerModel.func_82897_a())
+			{
+				this.zomgusVillagerModel = new ModelZomgus();
+				this.field_82431_q = this.zomgusVillagerModel.func_82897_a();
+				this.modelZombieVillager1 = new ModelZombieVillager(1.0F, 0.0F, true);
+				this.modelZombieVillager2 = new ModelZombieVillager(0.5F, 0.0F, true);
+			}
 
-    protected void rotateCorpse(EntityZombie p_77043_1_, float p_77043_2_, float p_77043_3_, float p_77043_4_)
-    {
-        if (p_77043_1_.isConverting())
-        {
-            p_77043_3_ += (float)(Math.cos((double)p_77043_1_.ticksExisted * 3.25D) * Math.PI * 0.25D);
-        }
+			this.mainModel = this.zomgusVillagerModel;
+			this.field_82423_g = this.modelZombieVillager1;
+			this.field_82425_h = this.modelZombieVillager2;
+		}
+		else
+		{
+			this.mainModel = this.modelBiped;
+			this.field_82423_g = this.modelBiped1;
+			this.field_82425_h = this.modelBiped2;
+		}
 
-        super.rotateCorpse(p_77043_1_, p_77043_2_, p_77043_3_, p_77043_4_);
-    }
+		this.modelBipedMain = (ModelBiped) this.mainModel;
+	}
 
-    protected void renderEquippedItems(EntityLiving p_77029_1_, float p_77029_2_)
-    {
-        this.renderEquippedItems((EntityZomgus)p_77029_1_, p_77029_2_);
-    }
+	protected void rotateCorpse(EntityZomgus zomgus, float f1, float f2, float f3)
+	{
+		if(zomgus.isConverting())
+		{
+			f2 += (float) (Math.cos((double) zomgus.ticksExisted * 3.25D) * Math.PI * 0.25D);
+		}
 
-    /**
-     * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
-     */
-    protected ResourceLocation getEntityTexture(EntityLiving p_110775_1_)
-    {
-        return this.getEntityTexture((EntityZomgus)p_110775_1_);
-    }
+		super.rotateCorpse(zomgus, f1, f2, f3);
+	}
 
-    /**
-     * Actually renders the given argument. This is a synthetic bridge method, always casting down its argument and then
-     * handing it off to a worker function which does the actual work. In all probabilty, the class Render is generic
-     * (Render<T extends Entity) and this method has signature public void func_76986_a(T entity, double d, double d1,
-     * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
-     */
-    public void doRender(EntityLiving p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_)
-    {
-        this.doRender((EntityZomgus)p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
-    }
+	@Override
+	protected void renderEquippedItems(EntityLiving living, float partialTickTime)
+	{
+		this.renderEquippedItems((EntityZomgus) living, partialTickTime);
+	}
 
-    /**
-     * Queries whether should render the specified pass or not.
-     */
-    protected int shouldRenderPass(EntityLiving p_77032_1_, int p_77032_2_, float p_77032_3_)
-    {
-        return this.shouldRenderPass((EntityZomgus)p_77032_1_, p_77032_2_, p_77032_3_);
-    }
+	@Override
+	protected ResourceLocation getEntityTexture(EntityLiving living)
+	{
+		return this.getEntityTexture((EntityZomgus) living);
+	}
+	
+	@Override
+	public void doRender(EntityLiving living, double x, double y, double z, float f1, float f2)
+	{
+		this.doRender((EntityZomgus) living, x, y, z, f1, f2);
+	}
 
-    /**
-     * Queries whether should render the specified pass or not.
-     */
-    protected int shouldRenderPass(EntityLivingBase p_77032_1_, int p_77032_2_, float p_77032_3_)
-    {
-        return this.shouldRenderPass((EntityZomgus)p_77032_1_, p_77032_2_, p_77032_3_);
-    }
+	@Override
+	protected int shouldRenderPass(EntityLiving living, int pass, float f)
+	{
+		return this.shouldRenderPass((EntityZomgus) living, pass, f);
+	}
 
-    protected void renderEquippedItems(EntityLivingBase p_77029_1_, float p_77029_2_)
-    {
-        this.renderEquippedItems((EntityZomgus)p_77029_1_, p_77029_2_);
-    }
+	@Override
+	protected int shouldRenderPass(EntityLivingBase living, int pass, float f)
+	{
+		return this.shouldRenderPass((EntityZomgus) living, pass, f);
+	}
 
-    protected void rotateCorpse(EntityLivingBase p_77043_1_, float p_77043_2_, float p_77043_3_, float p_77043_4_)
-    {
-        this.rotateCorpse((EntityZomgus)p_77043_1_, p_77043_2_, p_77043_3_, p_77043_4_);
-    }
+	@Override
+	protected void renderEquippedItems(EntityLivingBase living, float f)
+	{
+		this.renderEquippedItems((EntityZomgus) living, f);
+	}
 
-    /**
-     * Actually renders the given argument. This is a synthetic bridge method, always casting down its argument and then
-     * handing it off to a worker function which does the actual work. In all probabilty, the class Render is generic
-     * (Render<T extends Entity) and this method has signature public void func_76986_a(T entity, double d, double d1,
-     * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
-     */
-    public void doRender(EntityLivingBase p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_)
-    {
-        this.doRender((EntityZomgus)p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
-    }
+	@Override
+	protected void rotateCorpse(EntityLivingBase living, float f1, float f2, float f3)
+	{
+		this.rotateCorpse((EntityZomgus) living, f1, f2, f3);
+	}
 
-    /**
-     * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
-     */
-    protected ResourceLocation getEntityTexture(Entity p_110775_1_)
-    {
-        return this.getEntityTexture((EntityZomgus)p_110775_1_);
-    }
+	@Override
+	public void doRender(EntityLivingBase living, double x, double y, double z, float f1, float f2)
+	{
+		this.doRender((EntityZomgus) living, x, y, z, f1, f2);
+	}
 
-    /**
-     * Actually renders the given argument. This is a synthetic bridge method, always casting down its argument and then
-     * handing it off to a worker function which does the actual work. In all probabilty, the class Render is generic
-     * (Render<T extends Entity) and this method has signature public void func_76986_a(T entity, double d, double d1,
-     * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
-     */
-    public void doRender(Entity p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_)
-    {
-        this.doRender((EntityZomgus)p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
-    }
+	@Override
+	protected ResourceLocation getEntityTexture(Entity entity)
+	{
+		return this.getEntityTexture((EntityZomgus) entity);
+	}
+
+	@Override
+	public void doRender(Entity entity, double x, double y, double z, float f1, float f2)
+	{
+		this.doRender((EntityZomgus) entity, x, y, z, f1, f2);
+	}
 }

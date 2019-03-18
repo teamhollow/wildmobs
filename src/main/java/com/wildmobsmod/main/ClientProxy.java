@@ -1,28 +1,20 @@
 package com.wildmobsmod.main;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelWolf;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.renderer.entity.RenderSnowball;
-import net.minecraft.entity.Entity;
-
 import com.wildmobsmod.entity.monster.dreath.EntityDreath;
 import com.wildmobsmod.entity.monster.dreath.RenderDreath;
+import com.wildmobsmod.entity.monster.dreath.mired.EntityMired;
+import com.wildmobsmod.entity.monster.dreath.mired.EntityMiredSummoner;
+import com.wildmobsmod.entity.monster.dreath.mired.ModelMired;
+import com.wildmobsmod.entity.monster.dreath.mired.RenderMired;
+import com.wildmobsmod.entity.monster.dreath.mired.RenderMiredSummoner;
 import com.wildmobsmod.entity.monster.faded.EntityFaded;
 import com.wildmobsmod.entity.monster.faded.RenderFaded;
 import com.wildmobsmod.entity.monster.magmaplant.EntityMagmaPlant;
 import com.wildmobsmod.entity.monster.magmaplant.ModelMagmaPlant;
 import com.wildmobsmod.entity.monster.magmaplant.RenderMagmaPlant;
-import com.wildmobsmod.entity.monster.mired.EntityMired;
-import com.wildmobsmod.entity.monster.mired.EntityMiredSummoner;
-import com.wildmobsmod.entity.monster.mired.ModelMired;
-import com.wildmobsmod.entity.monster.mired.RenderMired;
-import com.wildmobsmod.entity.monster.mired.RenderMiredSummoner;
 import com.wildmobsmod.entity.monster.seascorpion.EntitySeaScorpion;
 import com.wildmobsmod.entity.monster.seascorpion.ModelSeaScorpion;
 import com.wildmobsmod.entity.monster.seascorpion.RenderSeaScorpion;
-import com.wildmobsmod.entity.monster.skeleton.EntityWMSkeleton;
-import com.wildmobsmod.entity.monster.skeleton.RenderWMSkeleton;
 import com.wildmobsmod.entity.monster.skeletonwolf.EntitySkeletonWolf;
 import com.wildmobsmod.entity.monster.skeletonwolf.ModelSkeletonWolf;
 import com.wildmobsmod.entity.monster.skeletonwolf.RenderSkeletonWolf;
@@ -41,6 +33,9 @@ import com.wildmobsmod.entity.passive.bison.RenderBison;
 import com.wildmobsmod.entity.passive.butterfly.EntityButterfly;
 import com.wildmobsmod.entity.passive.butterfly.ModelButterfly;
 import com.wildmobsmod.entity.passive.butterfly.RenderButterfly;
+import com.wildmobsmod.entity.passive.cheetah.EntityCheetah;
+import com.wildmobsmod.entity.passive.cheetah.ModelCheetah;
+import com.wildmobsmod.entity.passive.cheetah.RenderCheetah;
 import com.wildmobsmod.entity.passive.cougar.EntityCougar;
 import com.wildmobsmod.entity.passive.cougar.ModelCougar;
 import com.wildmobsmod.entity.passive.cougar.RenderCougar;
@@ -63,6 +58,9 @@ import com.wildmobsmod.entity.passive.goat.RenderGoat;
 import com.wildmobsmod.entity.passive.goose.EntityGoose;
 import com.wildmobsmod.entity.passive.goose.ModelGoose;
 import com.wildmobsmod.entity.passive.goose.RenderGoose;
+import com.wildmobsmod.entity.passive.hyena.EntityHyena;
+import com.wildmobsmod.entity.passive.hyena.ModelHyena;
+import com.wildmobsmod.entity.passive.hyena.RenderHyena;
 import com.wildmobsmod.entity.passive.jellyfish.EntityJellyfish;
 import com.wildmobsmod.entity.passive.jellyfish.ModelJellyfish;
 import com.wildmobsmod.entity.passive.jellyfish.RenderJellyfish;
@@ -77,27 +75,36 @@ import com.wildmobsmod.entity.passive.wolf.RenderWMWolf;
 import com.wildmobsmod.entity.projectile.lavaspit.EntityLavaSpit;
 import com.wildmobsmod.entity.projectile.lavaspit.RenderLavaSpit;
 import com.wildmobsmod.entity.projectile.seascorpionegg.EntitySeaScorpionEgg;
+import com.wildmobsmod.entity.projectile.spell.EntitySpell;
+import com.wildmobsmod.entity.projectile.spell.RenderSpell;
 import com.wildmobsmod.entity.projectile.tarantulahair.EntityTarantulaHair;
 import com.wildmobsmod.entity.projectile.tarantulahair.RenderTarantulaHair;
-import com.wildmobsmod.entity.projetile.spell.EntitySpell;
-import com.wildmobsmod.entity.projetile.spell.RenderSpell;
 import com.wildmobsmod.items.WildMobsModItems;
 import com.wildmobsmod.particles.EntityLavaSpitFX;
 import com.wildmobsmod.particles.EntitySpellFX;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.ModelWolf;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.entity.RenderSnowball;
+import net.minecraft.entity.Entity;
 
-public class ClientProxy extends ServerProxy{
-	
-	public void registerRenderThings(){	
+public class ClientProxy extends CommonProxy
+{
+	@Override
+	public void registerRenderThings()
+	{
 		RenderingRegistry.addNewArmourRendererPrefix("5");
 		RenderingRegistry.registerEntityRenderingHandler(EntityDeer.class, new RenderDeer(new ModelDeer(), new ModelDeerSaddle(), 0));
 		RenderingRegistry.registerEntityRenderingHandler(EntityFox.class, new RenderFox(new ModelFox(), 0));
 		RenderingRegistry.registerEntityRenderingHandler(EntityCougar.class, new RenderCougar(new ModelCougar(), 0));
 		RenderingRegistry.registerEntityRenderingHandler(EntityZomgus.class, new RenderZomgus());
 		RenderingRegistry.registerEntityRenderingHandler(EntityBison.class, new RenderBison(new ModelBison(), 0));
-		RenderingRegistry.registerEntityRenderingHandler(EntityWizard.class, new RenderWizard());
-		RenderingRegistry.registerEntityRenderingHandler(EntitySpell.class, new RenderSpell());
+//		RenderingRegistry.registerEntityRenderingHandler(EntityWizard.class, new RenderWizard()); //Disabled for now
+//		RenderingRegistry.registerEntityRenderingHandler(EntitySpell.class, new RenderSpell()); //Disabled for now
 		RenderingRegistry.registerEntityRenderingHandler(EntityMouse.class, new RenderMouse(new ModelMouse(), 0));
 		RenderingRegistry.registerEntityRenderingHandler(EntityButterfly.class, new RenderButterfly(new ModelButterfly(), 0));
 		RenderingRegistry.registerEntityRenderingHandler(EntityTarantula.class, new RenderTarantula());
@@ -112,7 +119,6 @@ public class ClientProxy extends ServerProxy{
 		RenderingRegistry.registerEntityRenderingHandler(EntityArmadillo.class, new RenderArmadillo(new ModelArmadillo(), 0));
 		RenderingRegistry.registerEntityRenderingHandler(EntityJellyfish.class, new RenderJellyfish(new ModelJellyfish(), 0));
 		RenderingRegistry.registerEntityRenderingHandler(EntitySkeletonWolf.class, new RenderSkeletonWolf(new ModelSkeletonWolf(), 0));
-		RenderingRegistry.registerEntityRenderingHandler(EntityWMSkeleton.class, new RenderWMSkeleton());
 		RenderingRegistry.registerEntityRenderingHandler(EntityGoose.class, new RenderGoose(new ModelGoose(), 0));
 		RenderingRegistry.registerEntityRenderingHandler(EntityMiredSummoner.class, new RenderMiredSummoner());
 		RenderingRegistry.registerEntityRenderingHandler(EntityWMOcelot.class, new RenderWMOcelot(new ModelWMOcelot(), 0));
@@ -120,28 +126,30 @@ public class ClientProxy extends ServerProxy{
 		RenderingRegistry.registerEntityRenderingHandler(EntitySeaScorpionEgg.class, new RenderSnowball(WildMobsModItems.seaScorpionEgg));
 		RenderingRegistry.registerEntityRenderingHandler(EntityTarantulaHair.class, new RenderTarantulaHair());
 		RenderingRegistry.registerEntityRenderingHandler(EntityFaded.class, new RenderFaded());
+		RenderingRegistry.registerEntityRenderingHandler(EntityCheetah.class, new RenderCheetah(new ModelCheetah(), 0));
+		RenderingRegistry.registerEntityRenderingHandler(EntityHyena.class, new RenderHyena(new ModelHyena(), 0));
 	}
-	
-	@Override
-	public void generateEntitySpellFX(Entity theEntity, double x1, double y1, double z1, double x2, double y2, double z2, float red, float green, float blue)
+
+	@SideOnly(Side.CLIENT)
+	public static void generateEntitySpellFX(Entity theEntity, double x1, double y1, double z1, double x2, double y2, double z2, float red, float green, float blue)
 	{
-	    double motionX = x2;
-	    double motionY = y2;
-	    double motionZ = z2;
-	    float colorRed = red;
-	    float colorGreen = green;
-	    float colorBlue = blue;
-	    EntityFX particleSpell = new EntitySpellFX(theEntity.worldObj, x1, y1, z1, motionX, motionY, motionZ, colorRed, colorGreen, colorBlue);
-	    Minecraft.getMinecraft().effectRenderer.addEffect(particleSpell);        
+		double motionX = x2;
+		double motionY = y2;
+		double motionZ = z2;
+		float colorRed = red;
+		float colorGreen = green;
+		float colorBlue = blue;
+		EntityFX particleSpell = new EntitySpellFX(theEntity.worldObj, x1, y1, z1, motionX, motionY, motionZ, colorRed, colorGreen, colorBlue);
+		Minecraft.getMinecraft().effectRenderer.addEffect(particleSpell);
 	}
-	
-	@Override
-	public void generateEntityMagmaSpitFX(Entity theEntity, double x1, double y1, double z1, double x2, double y2, double z2)
+
+	@SideOnly(Side.CLIENT)
+	public static void generateEntityMagmaSpitFX(Entity theEntity, double x1, double y1, double z1, double x2, double y2, double z2)
 	{
-	    double motionX = x2;
-	    double motionY = y2;
-	    double motionZ = z2;
-	    EntityFX particleMagmaSpit = new EntityLavaSpitFX(theEntity.worldObj, x1, y1, z1, motionX, motionY, motionZ);
-	    Minecraft.getMinecraft().effectRenderer.addEffect(particleMagmaSpit);        
+		double motionX = x2;
+		double motionY = y2;
+		double motionZ = z2;
+		EntityFX particleMagmaSpit = new EntityLavaSpitFX(theEntity.worldObj, x1, y1, z1, motionX, motionY, motionZ);
+		Minecraft.getMinecraft().effectRenderer.addEffect(particleMagmaSpit);
 	}
 }

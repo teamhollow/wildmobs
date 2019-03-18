@@ -2,8 +2,6 @@ package com.wildmobsmod.entity.passive.mouse;
 
 import org.lwjgl.opengl.GL11;
 
-import com.wildmobsmod.entity.passive.bison.EntityBison;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
@@ -11,7 +9,7 @@ import net.minecraft.util.MathHelper;
 
 public class ModelMouse extends ModelBase
 {
-	//fields
+	// fields
 	ModelRenderer head;
 	ModelRenderer ear1;
 	ModelRenderer ear2;
@@ -22,18 +20,18 @@ public class ModelMouse extends ModelBase
 	ModelRenderer foot3;
 	ModelRenderer foot4;
 
-	protected void convertToChild(ModelRenderer parParent, ModelRenderer parChild)
+	protected void convertToChild(ModelRenderer parent, ModelRenderer child)
 	{
 		// move child rotation point to be relative to parent
-		parChild.rotationPointX -= parParent.rotationPointX;
-		parChild.rotationPointY -= parParent.rotationPointY;
-		parChild.rotationPointZ -= parParent.rotationPointZ;
+		child.rotationPointX -= parent.rotationPointX;
+		child.rotationPointY -= parent.rotationPointY;
+		child.rotationPointZ -= parent.rotationPointZ;
 		// make rotations relative to parent
-		parChild.rotateAngleX -= parParent.rotateAngleX;
-		parChild.rotateAngleY -= parParent.rotateAngleY;
-		parChild.rotateAngleZ -= parParent.rotateAngleZ;
+		child.rotateAngleX -= parent.rotateAngleX;
+		child.rotateAngleY -= parent.rotateAngleY;
+		child.rotateAngleZ -= parent.rotateAngleZ;
 		// create relationship
-		parParent.addChild(parChild);
+		parent.addChild(child);
 	}
 
 	public ModelMouse()
@@ -119,16 +117,16 @@ public class ModelMouse extends ModelBase
 	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
 	{
 		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-        EntityMouse entitymouse = (EntityMouse)entity;
-        float f6 = (180F / (float)Math.PI);
-        this.head.rotateAngleX = f4 / (180F / (float)Math.PI);
-        this.head.rotateAngleY = f3 / (180F / (float)Math.PI);
-        this.head.rotateAngleX += 0.25F;
-        this.foot1.rotateAngleX = MathHelper.cos(f * 0.6662F) * 0.6F * f1;
-        this.foot2.rotateAngleX = MathHelper.cos(f * 0.6662F + (float)Math.PI) * 0.6F * f1;
-        this.foot3.rotateAngleX = MathHelper.cos(f * 0.6662F + (float)Math.PI) * 0.6F * f1;
-        this.foot4.rotateAngleX = MathHelper.cos(f * 0.6662F) * 0.6F * f1;
-        this.tail.rotateAngleY = MathHelper.cos(f * 0.6662F) * 0.6F * f1;
+		EntityMouse entitymouse = (EntityMouse) entity;
+		float f6 = (180F / (float) Math.PI);
+		this.head.rotateAngleX = f4 / (180F / (float) Math.PI);
+		this.head.rotateAngleY = f3 / (180F / (float) Math.PI);
+		this.head.rotateAngleX += 0.25F;
+		this.foot1.rotateAngleX = MathHelper.cos(f * 0.6662F) * 0.6F * f1;
+		this.foot2.rotateAngleX = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 0.6F * f1;
+		this.foot3.rotateAngleX = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 0.6F * f1;
+		this.foot4.rotateAngleX = MathHelper.cos(f * 0.6662F) * 0.6F * f1;
+		this.tail.rotateAngleY = MathHelper.cos(f * 0.6662F) * 0.6F * f1;
 	}
 
 }

@@ -13,81 +13,64 @@ import net.minecraft.world.World;
 
 public class EntityAIMoveToCrops extends EntityAIBase
 {
-    private EntityCreature theCreature;
-    private double shelterX;
-    private double shelterY;
-    private double shelterZ;
-    private double movementSpeed;
-    private World theWorld;
-    private static final String __OBFID = "CL_00001583";
+	private EntityCreature theCreature;
+	private double shelterX;
+	private double shelterY;
+	private double shelterZ;
+	private double movementSpeed;
+	private World theWorld;
 
-    public EntityAIMoveToCrops(EntityCreature p_i1623_1_, double p_i1623_2_)
-    {
-        this.theCreature = p_i1623_1_;
-        this.movementSpeed = p_i1623_2_;
-        this.theWorld = p_i1623_1_.worldObj;
-        this.setMutexBits(1);
-    }
+	public EntityAIMoveToCrops(EntityCreature creature, double speed)
+	{
+		this.theCreature = creature;
+		this.movementSpeed = speed;
+		this.theWorld = creature.worldObj;
+		this.setMutexBits(1);
+	}
 
-    /**
-     * Returns whether the EntityAIBase should begin execution.
-     */
-    public boolean shouldExecute()
-    {
-    	if (this.theCreature.onGround && ((EntityMouse)this.theCreature).hunger <= 0)
-    	{
-            Vec3 vec3 = this.findPossibleShelter();
+	/**
+	 * Returns whether the EntityAIBase should begin execution.
+	 */
+	public boolean shouldExecute()
+	{
+		if(this.theCreature.onGround && ((EntityMouse) this.theCreature).hunger <= 0)
+		{
+			Vec3 vec3 = this.findPossibleShelter();
+			if(vec3 == null) return false;
+			this.shelterX = vec3.xCoord;
+			this.shelterY = vec3.yCoord;
+			this.shelterZ = vec3.zCoord;
+			return true;
+		}
+		return false;
+	}
 
-            if (vec3 == null)
-            {
-                return false;
-            }
-            else
-            {
-                this.shelterX = vec3.xCoord;
-                this.shelterY = vec3.yCoord;
-                this.shelterZ = vec3.zCoord;
-                return true;
-            }
-    	}
-    	else
-    	{
-    		return false;
-    	}
-    }
+	/**
+	 * Returns whether an in-progress EntityAIBase should continue executing
+	 */
+	public boolean continueExecuting()
+	{
+		return !this.theCreature.getNavigator().noPath();
+	}
 
-    /**
-     * Returns whether an in-progress EntityAIBase should continue executing
-     */
-    public boolean continueExecuting()
-    {
-        return !this.theCreature.getNavigator().noPath();
-    }
+	/**
+	 * Execute a one shot task or start executing a continuous task
+	 */
+	public void startExecuting()
+	{
+		this.theCreature.getNavigator().tryMoveToXYZ(this.shelterX, this.shelterY, this.shelterZ, this.movementSpeed);
+	}
 
-    /**
-     * Execute a one shot task or start executing a continuous task
-     */
-    public void startExecuting()
-    {
-        this.theCreature.getNavigator().tryMoveToXYZ(this.shelterX, this.shelterY, this.shelterZ, this.movementSpeed);
-    }
-
-    private Vec3 findPossibleShelter()
-    {
-        Random random = this.theCreature.getRNG();
-
-        for (int i = 0; i < 10; ++i)
-        {
-            int j = MathHelper.floor_double(this.theCreature.posX + (double)random.nextInt(20) - (double)random.nextInt(20));
-            int k = MathHelper.floor_double(this.theCreature.boundingBox.minY + (double)random.nextInt(6) - (double)random.nextInt(6));
-            int l = MathHelper.floor_double(this.theCreature.posZ + (double)random.nextInt(20) - (double)random.nextInt(20));
-
-            if (this.theWorld.getBlock(j, k - 1, l) == Blocks.farmland)
-            {
-                return Vec3.createVectorHelper((double)j, (double)k, (double)l);
-            }
-        }
-
-        return null;
-    }
+	private Vec3 findPossibleShelter()
+	{
+		Random random = this.theCreature.getRNG();
+		for(int i = 0; i < 10; ++i)
+		{
+			int j = MathHelper.floor_double(this.theCreature.posX + (double) random.nextInt(20) - (double) random.nextInt(20));
+			int k = MathHelper.floor_double(this.theCreature.boundingBox.minY + (double) random.nextInt(6) - (double) random.nextInt(6));
+			int l = MathHelper.floor_double(this.theCreature.posZ + (double) random.nextInt(20) - (double) random.nextInt(20));
+			if(this.theWorld.getBlock(j, k - 1, l) == Blocks.farmland) return Vec3.createVectorHelper((double) j, (double) k, (double) l);
+		}
+		return null;
+	}
 }

@@ -3,12 +3,10 @@ package com.wildmobsmod.entity.passive.jellyfish;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.MathHelper;
 
 public class ModelJellyfish extends ModelBase
 {
-	//fields
+	// fields
 	ModelRenderer body;
 	ModelRenderer tentacles1;
 	ModelRenderer tentacles2;
@@ -51,7 +49,7 @@ public class ModelJellyfish extends ModelBase
 	{
 		super.render(entity, f, f1, f2, f3, f4, f5);
 		setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-		body.render(f5);	
+		body.render(f5);
 		tentacles1.render(f5);
 		tentacles2.render(f5);
 		oralarm1.render(f5);

@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.wildmobsmod.entity.bases.EntityMobTameable;
+import com.wildmobsmod.items.WildMobsModItems;
+import com.wildmobsmod.main.WildMobsMod;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.command.IEntitySelector;
@@ -31,90 +35,103 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
-import com.wildmobsmod.entity.bases.EntityMobTameable;
-import com.wildmobsmod.items.WildMobsModItems;
-import com.wildmobsmod.main.MainRegistry;
-
 public class EntitySeaScorpion extends EntityMobTameable
 {
 	//
-	// This mob is completely finished and shouldn't be changed at all. There's a lot of information about it on my Discord server.
+	// This mob is completely finished and shouldn't be changed at all. There's
+	// a lot of information about it on my Discord server.
 	//
 	
-	private ChunkCoordinates spawnPosition;
+	// Changed to more resource-friendly spawn system
+
+	private ChunkCoordinates cachedPosition;
 	private Entity closestLivingEntity;
 	private EntitySeaScorpion.Sorter theNearestAttackableTargetSorter;
-    private int eatingTimer;
-    public float seaScorpionPitch;
-    public float prevSeaScorpionPitch;
-    private float nextSeaScorpionPitch;
-    private double prevPosY;
-    private int timeToCalculatePosY;
-    private double d1;
-    private int timeToJump;
-    
-    ItemStack food;
+	private int eatingTimer;
+	public float seaScorpionPitch;
+	public float prevSeaScorpionPitch;
+	private float nextSeaScorpionPitch;
+	private double prevPosY;
+	private int timeToCalculatePosY;
+	private double movedDist;
+	private int timeToJump;
+	
+	private boolean canSpawnPack = true; // prevent pack members from spawning their own packs - only used for on-spawn handling
+
+	private ItemStack food;
 
 	public final IEntitySelector targetEntitySelectorMob = new IEntitySelector()
 	{
-		public boolean isEntityApplicable(Entity p_82704_1_)
+		public boolean isEntityApplicable(Entity entity)
 		{
-			return p_82704_1_.isEntityAlive() && EntitySeaScorpion.this.getEntitySenses().canSee(p_82704_1_) && EntitySeaScorpion.this.worldObj.getBlock(MathHelper.floor_double(p_82704_1_.posX), MathHelper.floor_double(p_82704_1_.posY), MathHelper.floor_double(p_82704_1_.posZ)).getMaterial() == Material.water && p_82704_1_ != EntitySeaScorpion.this && !(p_82704_1_ instanceof EntitySeaScorpion) && !(p_82704_1_ instanceof EntityCreeper && !(p_82704_1_ instanceof EntityGhast) && ((EntityMob)p_82704_1_).getActivePotionEffect(MainRegistry.potionAquaHealing) == null);
+			return entity.isEntityAlive() && EntitySeaScorpion.this.getEntitySenses().canSee(entity)
+					&& EntitySeaScorpion.this.worldObj.getBlock(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ)).getMaterial() == Material.water && entity != EntitySeaScorpion.this
+					&& !(entity instanceof EntitySeaScorpion) && !(entity instanceof EntityCreeper && !(entity instanceof EntityGhast) && ((EntityMob) entity).getActivePotionEffect(WildMobsMod.potionAquaHealing) == null);
 		}
 	};
-	
+
 	public final IEntitySelector targetEntitySelectorHuman = new IEntitySelector()
 	{
-		public boolean isEntityApplicable(Entity p_82704_1_)
+		public boolean isEntityApplicable(Entity entity)
 		{
-			return p_82704_1_.isEntityAlive() && EntitySeaScorpion.this.getEntitySenses().canSee(p_82704_1_) && EntitySeaScorpion.this.worldObj.getBlock(MathHelper.floor_double(p_82704_1_.posX), MathHelper.floor_double(p_82704_1_.posY), MathHelper.floor_double(p_82704_1_.posZ)).getMaterial() == Material.water && p_82704_1_ != EntitySeaScorpion.this && p_82704_1_ instanceof EntityPlayer && (!((EntityPlayer)p_82704_1_).capabilities.disableDamage && ((EntityPlayer)p_82704_1_).getActivePotionEffect(MainRegistry.potionAquaHealing) == null);
+			return entity.isEntityAlive() && EntitySeaScorpion.this.getEntitySenses().canSee(entity)
+					&& EntitySeaScorpion.this.worldObj.getBlock(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ)).getMaterial() == Material.water && entity != EntitySeaScorpion.this
+					&& entity instanceof EntityPlayer && (!((EntityPlayer) entity).capabilities.disableDamage && ((EntityPlayer) entity).getActivePotionEffect(WildMobsMod.potionAquaHealing) == null);
 		}
 	};
-	
+
 	public final IEntitySelector targetEntitySelectorLiving = new IEntitySelector()
 	{
-		public boolean isEntityApplicable(Entity p_82704_1_)
+		public boolean isEntityApplicable(Entity entity)
 		{
-			return p_82704_1_.isEntityAlive() && EntitySeaScorpion.this.getEntitySenses().canSee(p_82704_1_) && EntitySeaScorpion.this.worldObj.getBlock(MathHelper.floor_double(p_82704_1_.posX), MathHelper.floor_double(p_82704_1_.posY), MathHelper.floor_double(p_82704_1_.posZ)).getMaterial() == Material.water && p_82704_1_ != EntitySeaScorpion.this && !(p_82704_1_ instanceof EntitySeaScorpion) && !(p_82704_1_ instanceof EntityCreeper) && !(p_82704_1_ instanceof EntityGhast);
+			return entity.isEntityAlive() && EntitySeaScorpion.this.getEntitySenses().canSee(entity)
+					&& EntitySeaScorpion.this.worldObj.getBlock(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ)).getMaterial() == Material.water && entity != EntitySeaScorpion.this
+					&& !(entity instanceof EntitySeaScorpion) && !(entity instanceof EntityCreeper) && !(entity instanceof EntityGhast);
 		}
 	};
 
-	@Override
-	protected void entityInit() {
-		super.entityInit();
-		this.dataWatcher.addObject(20, Byte.valueOf((byte)0));
-        this.dataWatcher.addObject(21, new Integer(0));
-        this.dataWatcher.addObject(22, new Integer(0));
-        this.dataWatcher.addObject(23, new Integer(0));
-		this.dataWatcher.addObject(24, Byte.valueOf((byte)0));
-	}
-
-	public EntitySeaScorpion(World p_i1738_1_) {
-		super(p_i1738_1_);
+	public EntitySeaScorpion(World world)
+	{
+		super(world);
 		this.setSize(0.8F, 0.2F);
-        this.setIsWild(true);
-        this.setIsSeaMonster(false);
+		this.setIsWild(true);
+		this.setIsSeaMonster(false);
 		this.theNearestAttackableTargetSorter = new EntitySeaScorpion.Sorter(this);
 	}
 
-	public void writeEntityToNBT(NBTTagCompound entity)
+	public int getMaxSpawnedInChunk()
 	{
-		super.writeEntityToNBT(entity);
-		entity.setBoolean("IsWild", this.getIsWild());
-		entity.setInteger("Age", this.getGrowingAge());
-		entity.setInteger("Regeneration", this.getRegeneration());
-		entity.setInteger("Size", this.getSize());
-		entity.setBoolean("IsSeaMonster", this.getIsSeaMonster());
+		return WildMobsMod.SEASCORPION_CONFIG.getMaxPackSize();
 	}
 
-	public void readEntityFromNBT(NBTTagCompound entity)
+	protected void entityInit()
 	{
-		super.readEntityFromNBT(entity);
-		this.setIsWild(entity.getBoolean("IsWild"));
-        this.setGrowingAge(entity.getInteger("Age"));
-        this.setRegeneration(entity.getInteger("Regeneration"));
-        this.setSize(entity.getInteger("Size"));
-		this.setIsSeaMonster(entity.getBoolean("IsSeaMonster"));
+		super.entityInit();
+		this.dataWatcher.addObject(20, Byte.valueOf((byte) 0));
+		this.dataWatcher.addObject(21, new Integer(0));
+		this.dataWatcher.addObject(22, new Integer(0));
+		this.dataWatcher.addObject(23, new Integer(0));
+		this.dataWatcher.addObject(24, Byte.valueOf((byte) 0));
+	}
+
+	public void writeEntityToNBT(NBTTagCompound nbt)
+	{
+		super.writeEntityToNBT(nbt);
+		nbt.setBoolean("IsWild", this.getIsWild());
+		nbt.setInteger("Age", this.getGrowingAge());
+		nbt.setInteger("Regeneration", this.getRegeneration());
+		nbt.setInteger("Size", this.getSize());
+		nbt.setBoolean("IsSeaMonster", this.getIsSeaMonster());
+	}
+
+	public void readEntityFromNBT(NBTTagCompound nbt)
+	{
+		super.readEntityFromNBT(nbt);
+		this.setIsWild(nbt.getBoolean("IsWild"));
+		this.setGrowingAge(nbt.getInteger("Age"));
+		this.setRegeneration(nbt.getInteger("Regeneration"));
+		this.setSize(nbt.getInteger("Size"));
+		this.setIsSeaMonster(nbt.getBoolean("IsSeaMonster"));
 	}
 
 	public boolean getIsWild()
@@ -122,96 +139,82 @@ public class EntitySeaScorpion extends EntityMobTameable
 		return (this.dataWatcher.getWatchableObjectByte(20) & 1) != 0;
 	}
 
-	public void setIsWild(boolean p_70900_1_)
+	public void setIsWild(boolean flag)
 	{
-		if (p_70900_1_)
-		{
-			this.dataWatcher.updateObject(20, Byte.valueOf((byte)1));
-		}
-		else
-		{
-			this.dataWatcher.updateObject(20, Byte.valueOf((byte)0));
-		}
+		this.dataWatcher.updateObject(20, Byte.valueOf((byte) (flag ? 1 : 0)));
 	}
 
-    public int getGrowingAge()
-    {
-        return this.dataWatcher.getWatchableObjectInt(21);
-    }
+	public int getGrowingAge()
+	{
+		return this.dataWatcher.getWatchableObjectInt(21);
+	}
 
-    public void setGrowingAge(int entity)
-    {
-    	this.dataWatcher.updateObject(21, Integer.valueOf(entity));
-    }
-    
-    public int getRegeneration()
-    {
-        return this.dataWatcher.getWatchableObjectInt(22);
-    }
+	public void setGrowingAge(int age)
+	{
+		this.dataWatcher.updateObject(21, Integer.valueOf(age));
+	}
 
-    public void setRegeneration(int entity)
-    {
-    	this.dataWatcher.updateObject(22, Integer.valueOf(entity));
-    }
-    
-    public int getSize()
-    {
-        return this.dataWatcher.getWatchableObjectInt(23);
-    }
+	public int getRegeneration()
+	{
+		return this.dataWatcher.getWatchableObjectInt(22);
+	}
 
-    public void setSize(int entity)
-    {
-    	this.dataWatcher.updateObject(23, Integer.valueOf(entity));
-    	this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue((double)(8 + 4 * entity));
-    	this.experienceValue = 3 + entity;
-    	this.setHealth(this.getMaxHealth());
-    	this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(this.getSize());
-    }
-    
+	public void setRegeneration(int regen)
+	{
+		this.dataWatcher.updateObject(22, Integer.valueOf(regen));
+	}
+
+	public int getSize()
+	{
+		return this.dataWatcher.getWatchableObjectInt(23);
+	}
+
+	public void setSize(int size)
+	{
+		this.dataWatcher.updateObject(23, Integer.valueOf(size));
+		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue((double) (8 + 4 * size));
+		this.experienceValue = 3 + size;
+		this.setHealth(this.getMaxHealth());
+		this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(this.getSize());
+	}
+
 	public boolean getIsSeaMonster()
 	{
 		return (this.dataWatcher.getWatchableObjectByte(24) & 1) != 0;
 	}
 
-	public void setIsSeaMonster(boolean p_70900_1_)
+	public void setIsSeaMonster(boolean flag)
 	{
-		if (p_70900_1_)
-		{
-			this.dataWatcher.updateObject(24, Byte.valueOf((byte)1));
-		}
-		else
-		{
-			this.dataWatcher.updateObject(24, Byte.valueOf((byte)0));
-		}
+		this.dataWatcher.updateObject(24, Byte.valueOf((byte) (flag ? 1 : 0)));
 	}
-    
-    protected void applyEntityAttributes()
-    {
-    	super.applyEntityAttributes();
-    	this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.0D);
-    	this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(16.0D);
-    }
 
-	protected void fall(float p_70069_1_)
+	protected void applyEntityAttributes()
 	{
-		if (this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).getMaterial() != Material.water)
+		super.applyEntityAttributes();
+		this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(16.0D);
+	}
+
+	protected void fall(float distance)
+	{
+		if(this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).getMaterial() != Material.water)
 		{
-			super.fall(p_70069_1_);
+			super.fall(distance);
 		}
 	}
 
-	protected void updateFallState(double p_70064_1_, boolean p_70064_3_)
+	protected void updateFallState(double distanceFallenThisTick, boolean onGround)
 	{
-		if (this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).getMaterial() != Material.water)
+		if(this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).getMaterial() != Material.water)
 		{
-			super.updateFallState(p_70064_1_, p_70064_3_);
+			super.updateFallState(distanceFallenThisTick, onGround);
 		}
 	}
 
-    public boolean handleWaterMovement()
-    {
-        return false;
-    }
+	public boolean handleWaterMovement()
+	{
+		return false;
+	}
 
 	public boolean canBreatheUnderwater()
 	{
@@ -248,11 +251,11 @@ public class EntitySeaScorpion extends EntityMobTameable
 		return this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water ? "wildmobsmod:mob.seascorpion.hurtwater" : "wildmobsmod:mob.seascorpion.hurtland";
 	}
 
-    public int getTalkInterval()
-    {
-        return 80;
-    }
-    
+	public int getTalkInterval()
+	{
+		return 80;
+	}
+
 	public EnumCreatureAttribute getCreatureAttribute()
 	{
 		return EnumCreatureAttribute.ARTHROPOD;
@@ -261,819 +264,503 @@ public class EntitySeaScorpion extends EntityMobTameable
 	public void onLivingUpdate()
 	{
 		super.onLivingUpdate();
-        
-		if (this.spawnPosition != null)
-		{
-			this.checkBlockCollision();
-		}
+		checkBlockCollision();
+		final int flooredX = MathHelper.floor_double(posX), flooredY = MathHelper.floor_double(posY), flooredZ = MathHelper.floor_double(posZ);
+		final Block blockAtPos = worldObj.getBlock(flooredX, flooredY, flooredZ);
 		
-		//
-		// Vertical movement
-		//
-		if (this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water)
-		{
-			if (this.timeToJump > 0)
-			{
-				this.motionY = 0.2D;
-				this.timeToJump--;
-			}
-			else
-			{
-				if (this.spawnPosition != null )
-				{
-					double d1 = (double)this.spawnPosition.posY + 0.1D - this.posY;
-					if (this.entityToAttack == null)
-					{
-						this.motionY += (Math.signum(d1) * 0.699999988079071 - this.motionY) * 0.15000000149011612D;
-						if (this.spawnPosition.posY - 0.5D > this.posY || this.spawnPosition.posY + 0.5D < this.posY)
-						{
-							this.motionY *= 0.6D;
-						}
-						else
-						{
-							this.motionY *= 0.4D;
-						}
-					}
-					else
-					{
-						this.motionY += (Math.signum(d1) * 0.699999988079071 - this.motionY) * 0.15000000149011612D;
-						this.motionY *= 0.8D;
-					}
-				}
-				else
-				{
-					this.motionY = 0.0D;
-					this.motionY *= 0.0D;
+		// Movement
+		if(blockAtPos.getMaterial() == Material.water) {
+			if(timeToJump > 0) {
+				motionY = 0.2D;
+				timeToJump--;
+			} else {
+				if(cachedPosition != null) {
+					double d1 = (double) cachedPosition.posY + 0.1D - posY;
+					motionY += (Math.signum(d1) * 0.699999988079071 - motionY) * 0.15000000149011612D;
+					motionY *= entityToAttack == null ? cachedPosition.posY - 0.5D > posY || cachedPosition.posY + 0.5D < posY ? 0.6D : 0.4D : 0.8D;
+				} else {
+					motionY = 0.0D;
 				}
 			}
-			
-			if (this.entityToAttack != null && this.worldObj.getBlock(MathHelper.floor_double(this.entityToAttack.posX), MathHelper.floor_double(this.entityToAttack.posY + this.entityToAttack.getEyeHeight()), MathHelper.floor_double(this.entityToAttack.posZ)).isNormalCube() == false && this.worldObj.getBlock(MathHelper.floor_double(this.entityToAttack.posX), MathHelper.floor_double(this.entityToAttack.posY + this.entityToAttack.getEyeHeight()), MathHelper.floor_double(this.entityToAttack.posZ)).getMaterial() != Material.water && this.rand.nextInt(30) == 0)
-			{
-				if (this.getDistanceSqToEntity(this.entityToAttack) < 16.0D)
-				{
-					this.timeToJump = 20;
+			if(entityToAttack != null) {
+				Block block = worldObj.getBlock(MathHelper.floor_double(entityToAttack.posX), MathHelper.floor_double(entityToAttack.posY + entityToAttack.getEyeHeight()), MathHelper.floor_double(entityToAttack.posZ));
+				if(!block.isNormalCube() && block.getMaterial() != Material.water && rand.nextInt(30) == 0 && getDistanceSqToEntity(entityToAttack) < 16.0D) {
+					timeToJump = 20;
 				}
 			}
-		}
-		
-		if (this.timeToJump > 0 && this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).isNormalCube() == false && this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).getMaterial() != Material.water && this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY) - 1, MathHelper.floor_double(this.posZ)).getMaterial() == Material.water)
-		{
-			this.timeToJump = 0;
-			this.waterJump();
-		}
-		
-		if ((this.spawnPosition == null || this.rand.nextInt(100) == 0 || this.spawnPosition.getDistanceSquared((int)this.posX, (int)this.posY, (int)this.posZ) < 2.0F || this.spawnPosition.getDistanceSquared((int)this.posX, (int)this.spawnPosition.posY, (int)this.posZ) < 1.0F) && this.entityToAttack == null)
-		{
-			this.spawnPosition = new ChunkCoordinates((int)this.posX + this.rand.nextInt(12) - this.rand.nextInt(12), (int)this.posY + this.rand.nextInt(8) - 2, (int)this.posZ + this.rand.nextInt(12) - this.rand.nextInt(12));
-		}
-		else if (this.entityToAttack != null)
-		{
-			this.spawnPosition = null;
-			if ((int)this.entityToAttack.posY < (int)(this.entityToAttack.posY + this.entityToAttack.getEyeHeight()) && this.worldObj.getBlock((int)this.entityToAttack.posX, (int)(this.entityToAttack.posY + this.entityToAttack.getEyeHeight()), (int)this.entityToAttack.posZ).getMaterial() == Material.water)
-			{
-				this.spawnPosition = new ChunkCoordinates((int)this.entityToAttack.posX - 1, (int)this.entityToAttack.posY + 1, (int)this.entityToAttack.posZ);
-			}
-			else
-			{
-				this.spawnPosition = new ChunkCoordinates((int)this.entityToAttack.posX - 1, (int)this.entityToAttack.posY, (int)this.entityToAttack.posZ);
-			}
-		}
-		
-		if (this.spawnPosition != null && this.worldObj.getBlock(this.spawnPosition.posX, this.spawnPosition.posY, this.spawnPosition.posZ).getMaterial() != Material.water || this.spawnPosition.posY < 1)
-		{
-			this.spawnPosition = null;
-		}
-		
-		if (this.spawnPosition != null && this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water)
-		{
-			double d0 = (double)this.spawnPosition.posX + 0.5D - this.posX;
-			double d2 = (double)this.spawnPosition.posZ + 0.5D - this.posZ;
-			double speed;
-			if (this.entityToAttack == null)
-			{
-				speed = 0.07D;
-			}
-			else
-			{
-				speed = 0.12D;
-			}
-			this.motionX += (Math.signum(d0) * speed - this.motionX) * 0.5D;
-			this.motionZ += (Math.signum(d2) * speed - this.motionZ) * 0.5D;
-			if (this.spawnPosition != null)
-			{
-	    		this.moveForward = 0.05F;
-			}
-		}
-		
-		if (this.getGrowingAge() >= 0)
-		{
-			if (this.getIsSeaMonster() == true || (this.hasCustomNameTag() && "Leviathan".equals(this.getCustomNameTag())))
-			{
-				this.findLivingToAttack();
-			}
-			else
-			{
-				if (this.getIsWild() == false)
-				{
-					this.findMobToAttack();
-				}
-				else
-				{
-					float f = this.getBrightness(1.0F);
-
-					if (this.canSeaScorpionSeeSky() == true && this.worldObj.isDaytime() == true && this.worldObj.isThundering() == false && this.worldObj.isRaining() == false)
-					{
-					}
-					else
-					{
-						if (f < 0.5F)
-						{
-							this.findHumanToAttack();
-						}
-					}
-				}
-			}
-		}
-		
-		EntityLivingBase target = this.getAttackTarget();
-		
-		if (this.entityToAttack != null)
-		{
-			if (this.getGrowingAge() < 0)
-			{
-				this.setTarget(null);
-			}
-			else
-			{
-				if (this.canAttackTargetBeSeen(this.entityToAttack) == false)
-				{
-					this.setTarget(null);
-				}
-				else
-				{
-					if (this.worldObj.getBlock(MathHelper.floor_double(this.entityToAttack.posX), MathHelper.floor_double(this.entityToAttack.posY), MathHelper.floor_double(this.entityToAttack.posZ)).getMaterial() != Material.water && this.worldObj.getBlock(MathHelper.floor_double(this.entityToAttack.posX), MathHelper.floor_double(this.entityToAttack.posY - 1), MathHelper.floor_double(this.entityToAttack.posZ)).getMaterial() != Material.water)
-					{
-						this.setTarget(null);
-					}
-				}
-			}
-		}
-		
-		int i = this.getGrowingAge();
-
-		if (i < 0)
-		{
-			++i;
-			this.setGrowingAge(i);
-		}
-		else if (i > 0)
-		{
-			--i;
-			this.setGrowingAge(i);
 		}
 
-		int j = this.getRegeneration();
+		if(timeToJump > 0 && !blockAtPos.isNormalCube() && blockAtPos.getMaterial() != Material.water && worldObj.getBlock(flooredX, flooredY - 1, flooredZ).getMaterial() == Material.water) {
+			timeToJump = 0;
+			waterJump();
+		}
 
-		if (j < 0)
-		{
-			++j;
-			this.setRegeneration(j);
-		}
-		else if (j > 0)
-		{
-			--j;
-			this.setRegeneration(j);
-		}
-		else if (j == 0 && this.getIsWild() == false && this.getHealth() < this.getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue() && this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water)
-		{
-			if (this.entityToAttack != null)
-			{
-				this.setRegeneration(50);
+		if((cachedPosition == null || rand.nextInt(100) == 0 || cachedPosition.getDistanceSquared(flooredX, flooredY, flooredZ) < 2.0F || cachedPosition.getDistanceSquared(flooredX, (int) cachedPosition.posY, flooredZ) < 1.0F) && entityToAttack == null) {
+			cachedPosition = new ChunkCoordinates(flooredX + rand.nextInt(12) - rand.nextInt(12), flooredY + rand.nextInt(8) - 2, flooredZ + rand.nextInt(12) - rand.nextInt(12));
+		} else if(entityToAttack != null) {
+			cachedPosition = null;
+			final int targetX = (int) entityToAttack.posX, targetY = (int) entityToAttack.posY, targetZ = (int) entityToAttack.posZ;
+			if(targetY < (int) (targetY + entityToAttack.getEyeHeight()) && worldObj.getBlock(targetX, (int) (targetY + entityToAttack.getEyeHeight()), targetZ).getMaterial() == Material.water) {
+				cachedPosition = new ChunkCoordinates(targetX - 1, targetY + 1, targetZ);
+			} else {
+				cachedPosition = new ChunkCoordinates(targetX - 1, targetY, targetZ);
 			}
-			else
-			{
-				this.setRegeneration(80);
+		}
+
+		final int cachedX = cachedPosition.posX, cachedY = cachedPosition.posY, cachedZ = cachedPosition.posZ;
+		if(cachedPosition != null && worldObj.getBlock(cachedX, cachedY, cachedZ).getMaterial() != Material.water || cachedY < 1) {
+			cachedPosition = null;
+		}
+
+		if(cachedPosition != null && blockAtPos.getMaterial() == Material.water) {
+			final double xDist = cachedX + 0.5D - posX, zDist =  cachedZ + 0.5D - posZ;
+			final double speed = entityToAttack == null ? 0.07D : 0.12D;
+			motionX += (Math.signum(xDist) * speed - motionX) * 0.5D;
+			motionZ += (Math.signum(zDist) * speed - motionZ) * 0.5D;
+			moveForward = 0.05F;
+		}
+
+		// Find attack target
+		if(getGrowingAge() >= 0) {
+			if(getIsSeaMonster() || (hasCustomNameTag() && "Leviathan".equals(getCustomNameTag()))) {
+				findLivingToAttack();
+			} else if(!getIsWild()) {
+				findMobToAttack();
+			} else if(!canSeaScorpionSeeSky() && !worldObj.isDaytime() && worldObj.isThundering() && worldObj.isRaining() && getBrightness(1.0F) < 0.5F) {
+				findHumanToAttack();
 			}
-			this.heal(1);
 		}
 		
-        if (this.eatingTimer > 0 && this.worldObj.isRemote)
-        {
-            String s = "iconcrack_" + Item.getIdFromItem(this.food.getItem());
-            if (this.food.getHasSubtypes())
-            {
-                s = s + "_" + this.food.getItemDamage();
-            }
-            
-        	for (int k = 0; k < 3; ++k)
-        	{
-        		double d0 = this.rand.nextGaussian() * 0.01D;
-        		double d1 = this.rand.nextGaussian() * 0.01D;
-        		double d2 = this.rand.nextGaussian() * 0.01D;
-        		this.worldObj.spawnParticle(s, this.posX + (double)(this.rand.nextFloat() * this.width * 1.5F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height) - 0.5D, this.posZ + (double)(this.rand.nextFloat() * this.width * 1.5F) - (double)this.width, d0, d1, d2);
-        	}
-        }
-        
-		if (this.eatingTimer < 0)
-		{
-			this.eatingTimer++;
+		if(entityToAttack != null) {
+			if(getGrowingAge() < 0 || !canAttackTargetBeSeen(entityToAttack)) {
+				entityToAttack = null;
+			} else {
+				final int targetX = MathHelper.floor_double(entityToAttack.posX), targetY = MathHelper.floor_double(entityToAttack.posY), targetZ = MathHelper.floor_double(entityToAttack.posZ);
+				if(worldObj.getBlock(targetX, targetY, targetZ).getMaterial() != Material.water && worldObj.getBlock(targetX, targetY - 1, targetZ).getMaterial() != Material.water) {
+					entityToAttack = null;
+				}
+			}
 		}
-		else if (this.eatingTimer > 0)
-		{
-			this.eatingTimer--;
+
+		// Update stats
+		int age = getGrowingAge();
+		if(age < 0) {
+			age++;
+		} else if(age > 0) {
+			age--;
 		}
-		
-		//
-		// Sea scorpion pitch
-		//
-		this.prevSeaScorpionPitch = this.seaScorpionPitch;
-		
-		double d0 = (double)MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
-		
-		if (d0 < 0)
-		{
-			d0 = -d0;
+		setGrowingAge(age);
+
+		int regen = getRegeneration();
+		if(regen < 0) {
+			regen++;
+		} else if(regen > 0) {
+			regen--;
+		} else if(!getIsWild() && getHealth() < getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue() && blockAtPos.getMaterial() == Material.water) {
+			regen = entityToAttack == null ? 80 : 50;
+			heal(1);
 		}
-		
-		if (this.timeToCalculatePosY > 0)
-		{
-			this.timeToCalculatePosY--;
+		setRegeneration(regen);
+
+		if(worldObj.isRemote && eatingTimer > 0) {
+			String particleName = "iconcrack_" + Item.getIdFromItem(food.getItem());
+			if(food.getHasSubtypes()) {
+				particleName = particleName + "_" + food.getItemDamage();
+			}
+			for(int i = 0; i < 3; i++) {
+				double d0 = rand.nextGaussian() * 0.01D;
+				double d1 = rand.nextGaussian() * 0.01D;
+				double d2 = rand.nextGaussian() * 0.01D;
+				worldObj.spawnParticle(particleName, posX + (double) (rand.nextFloat() * width * 1.5F) - (double) width, posY + 0.5D + (double) (rand.nextFloat() * height) - 0.5D, posZ + (double) (rand.nextFloat() * width * 1.5F) - (double) width, d0, d1, d2);
+			}
 		}
-		else
-		{
-			this.timeToCalculatePosY = 2;
-			this.d1 = -(this.prevPosY - this.posY);
-			this.prevPosY = this.posY;
+
+		if(eatingTimer < 0) {
+			eatingTimer++;
+		} else if(eatingTimer > 0) {
+			eatingTimer--;
 		}
-		
-		this.nextSeaScorpionPitch = (float)((d0 * 100) * (this.d1 * 10));
-		
-		if (this.seaScorpionPitch < this.nextSeaScorpionPitch - 4.0F)
-		{
-			this.seaScorpionPitch = this.seaScorpionPitch + 2.0F;
+
+		// Adjust pitch
+		prevSeaScorpionPitch = seaScorpionPitch;
+		double d0 = Math.sqrt(Math.abs(motionX * motionX + motionZ * motionZ));
+		if(timeToCalculatePosY > 0) {
+			timeToCalculatePosY--;
+		} else {
+			timeToCalculatePosY = 2;
+			movedDist = -(prevPosY - posY);
+			prevPosY = posY;
 		}
-		else if (this.seaScorpionPitch > this.nextSeaScorpionPitch + 4.0F)
-		{
-			this.seaScorpionPitch = this.seaScorpionPitch - 2.0F;
+		nextSeaScorpionPitch = (float) ((d0 * 100) * (movedDist * 10));
+		if(seaScorpionPitch < nextSeaScorpionPitch - 4.0F) {
+			seaScorpionPitch = seaScorpionPitch + 2.0F;
+		} else if(seaScorpionPitch > nextSeaScorpionPitch + 4.0F) {
+			seaScorpionPitch = seaScorpionPitch - 2.0F;
 		}
 	}
-	
-	protected void waterJump()
-	{
-		this.motionY = 0.4D;
 
-		if (this.isPotionActive(Potion.jump))
-		{
-			this.motionY += (double)((float)(this.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F);
+	protected void waterJump() {
+		motionY = 0.4D;
+		if(isPotionActive(Potion.jump)) {
+			motionY += (double) ((float) (getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F);
 		}
-
-		this.motionX *= 1.5D;
-		this.motionZ *= 1.5D;
-
-		this.isAirBorne = true;
+		motionX *= 1.5D;
+		motionZ *= 1.5D;
+		isAirBorne = true;
 	}
-	
-    private float updateRotation(float p_75652_1_, float p_75652_2_, float p_75652_3_)
-    {
-        float f3 = MathHelper.wrapAngleTo180_float(p_75652_2_ - p_75652_1_);
 
-        if (f3 > p_75652_3_)
-        {
-            f3 = p_75652_3_;
-        }
+//	private float updateRotation(float p_75652_1_, float p_75652_2_, float p_75652_3_)
+//	{
+//		float f3 = MathHelper.wrapAngleTo180_float(p_75652_2_ - p_75652_1_);
+//
+//		if(f3 > p_75652_3_)
+//		{
+//			f3 = p_75652_3_;
+//		}
+//
+//		if(f3 < -p_75652_3_)
+//		{
+//			f3 = -p_75652_3_;
+//		}
+//
+//		return p_75652_1_ + f3;
+//	}
 
-        if (f3 < -p_75652_3_)
-        {
-            f3 = -p_75652_3_;
-        }
-
-        return p_75652_1_ + f3;
-    }
-    
-	public void updateEntityActionState()
-	{
+	public void updateEntityActionState() {
 		super.updateEntityActionState();
-		this.renderYawOffset = this.rotationYaw = -((float)Math.atan2(this.motionX, this.motionZ)) * 180.0F / (float)Math.PI;
+		renderYawOffset = rotationYaw = -((float) Math.atan2(motionX, motionZ)) * 180.0F / (float) Math.PI;
 	}
-	
-    protected void checkBlockCollision()
-    {
-    	int x = this.spawnPosition.posX;
-    	int y = this.spawnPosition.posY;
-    	int z = this.spawnPosition.posZ;
-    	
-		if (z > this.posZ && this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ) + 1).isNormalCube() && (int)this.posY == y)
-		{
-			this.spawnPosition = null;
-			if (this.entityToAttack == null)
-			{
-				this.spawnPosition = new ChunkCoordinates((int)this.posX + this.rand.nextInt(12) - this.rand.nextInt(12), (int)this.posY + this.rand.nextInt(8) - 2, (int)this.posZ - this.rand.nextInt(12));
-			}
+
+	protected void checkBlockCollision() {
+		if(cachedPosition == null || cachedPosition.posY != (int) posY) return;
+		int spawnX = cachedPosition.posX, spawnY = cachedPosition.posY, spawnZ = cachedPosition.posZ;
+		int x = MathHelper.floor_double(posX), y = MathHelper.floor_double(posY), z = MathHelper.floor_double(posZ);
+		
+		if(spawnZ > posZ && worldObj.getBlock(x, y, z + 1).isNormalCube()) {
+			cachedPosition = entityToAttack == null ? new ChunkCoordinates(x + rand.nextInt(12) - rand.nextInt(12), y + rand.nextInt(8) - 2, z - rand.nextInt(12)) : null;
+		} else if(spawnX < posX && worldObj.getBlock(x - 1, y, z).isNormalCube()) {
+			cachedPosition = entityToAttack == null ? new ChunkCoordinates(x + rand.nextInt(12), y + rand.nextInt(8) - 2, z + rand.nextInt(12) - rand.nextInt(12)) : null;
+		} else if(spawnZ < posZ && worldObj.getBlock(x, y, z - 1).isNormalCube()) {
+			cachedPosition = entityToAttack == null ? new ChunkCoordinates(x + rand.nextInt(12) - rand.nextInt(12), y + rand.nextInt(8) - 2, z + rand.nextInt(12)) : null;
+		} else if(spawnX > posX && worldObj.getBlock(x + 1, y, z).isNormalCube()) {
+			cachedPosition = entityToAttack == null ? new ChunkCoordinates(x - rand.nextInt(12), y + rand.nextInt(8) - 2, z + rand.nextInt(12) - rand.nextInt(12)) : null;
 		}
-		else if (x < this.posX && this.worldObj.getBlock(MathHelper.floor_double(this.posX) - 1, MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).isNormalCube() && (int)this.posY == y)
-		{
-			this.spawnPosition = null;
-			if (this.entityToAttack == null)
-			{
-				this.spawnPosition = new ChunkCoordinates((int)this.posX + this.rand.nextInt(12), (int)this.posY + this.rand.nextInt(8) - 2, (int)this.posZ + this.rand.nextInt(12) - this.rand.nextInt(12));
-			}
-		}
-		else if (z < this.posZ && this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ) - 1).isNormalCube() && (int)this.posY == y)
-		{
-			this.spawnPosition = null;
-			if (this.entityToAttack == null)
-			{
-				this.spawnPosition = new ChunkCoordinates((int)this.posX + this.rand.nextInt(12) - this.rand.nextInt(12), (int)this.posY + this.rand.nextInt(8) - 2, (int)this.posZ + this.rand.nextInt(12));
-			}
-		}
-		else if (x > this.posX && this.worldObj.getBlock(MathHelper.floor_double(this.posX) + 1, MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).isNormalCube() && (int)this.posY == y)
-		{
-			this.spawnPosition = null;
-			if (this.entityToAttack == null)
-			{
-				this.spawnPosition = new ChunkCoordinates((int)this.posX - this.rand.nextInt(12), (int)this.posY + this.rand.nextInt(8) - 2, (int)this.posZ + this.rand.nextInt(12) - this.rand.nextInt(12));
-			}
-		}
-    }
-    
-	public void onUpdate()
-	{
+	}
+
+	public void onUpdate() {
 		super.onUpdate();
-		if (!this.worldObj.isRemote && this.worldObj.difficultySetting == EnumDifficulty.PEACEFUL && this.getIsWild() == true)
-		{
-			this.setDead();
+		if(!worldObj.isRemote) {
+			if( worldObj.difficultySetting == EnumDifficulty.PEACEFUL && getIsWild()) setDead();
+		} else {
+			setScaleForAge(isChild(), getSize());
 		}
-		if (this.worldObj.isRemote)
-		{
-			this.setScaleForAge(this.isChild(), this.getSize());
+	}
+
+	public void onEntityUpdate() {
+		int air = getAir();
+		super.onEntityUpdate();
+		if(isEntityAlive() && worldObj.getBlock(MathHelper.floor_double(posX), MathHelper.floor_double(posY), MathHelper.floor_double(posZ)).getMaterial() != Material.water) {
+			setAir(--air);
+			if(air <= -20) {
+				setAir(0);
+				attackEntityFrom(DamageSource.drown, 2.0F);
+			}
+		} else {
+			setAir(300);
 		}
+	}
+
+	public boolean canAttackTargetBeSeen(Entity entity) {
+		return this.worldObj.rayTraceBlocks(Vec3.createVectorHelper(posX, posY + (double) getEyeHeight(), posZ), Vec3.createVectorHelper(entity.posX, entity.posY + 0.1, entity.posZ)) == null;
+	}
+
+	public boolean attackEntityAsMob(Entity entity) {
+		if(getGrowingAge() >= 0 && worldObj.getBlock(MathHelper.floor_double(posX), MathHelper.floor_double(posY), MathHelper.floor_double(posZ)).getMaterial() == Material.water) {
+			float damage = (float) getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
+			int knockback = 0;
+			if(entity instanceof EntityLivingBase) {
+				damage += EnchantmentHelper.getEnchantmentModifierLiving(this, (EntityLivingBase) entity);
+				knockback += EnchantmentHelper.getKnockbackModifier(this, (EntityLivingBase) entity);
+			}
+			if(!getIsWild() && !(entity instanceof EntityPlayer)) {
+				damage += 5;
+			}
+			if(entity.attackEntityFrom(DamageSource.causeMobDamage(this), damage + 5)) {
+				if(knockback > 0) {
+					entity.addVelocity((double) (-MathHelper.sin(rotationYaw * (float) Math.PI / 180.0F) * (float) knockback * 0.5F), 0.1D, (double) (MathHelper.cos(rotationYaw * (float) Math.PI / 180.0F) * (float) knockback * 0.5F));
+					motionX *= 0.6D;
+					motionZ *= 0.6D;
+				}
+				int fireAspect = EnchantmentHelper.getFireAspectModifier(this);
+				if(fireAspect > 0) {
+					entity.setFire(fireAspect * 4);
+				}
+				if(entity instanceof EntityLivingBase) {
+					EnchantmentHelper.func_151384_a((EntityLivingBase) entity, this);
+				}
+				EnchantmentHelper.func_151385_b(this, entity);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected void findMobToAttack() {
+		findAttackTarget(targetEntitySelectorMob);
+	}
+
+	protected void findHumanToAttack() {
+		findAttackTarget(targetEntitySelectorHuman);
+	}
+
+	protected void findLivingToAttack() {
+		findAttackTarget(targetEntitySelectorLiving);
 	}
 	
-	public void onEntityUpdate()
-	{
-        int i = this.getAir();
-        super.onEntityUpdate();
-
-        if (this.isEntityAlive() && this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).getMaterial() != Material.water)
-        {
-            --i;
-            this.setAir(i);
-
-            if (this.getAir() == -20)
-            {
-                this.setAir(0);
-                this.attackEntityFrom(DamageSource.drown, 2.0F);
-            }
-        }
-        else
-        {
-            this.setAir(300);
-        }
-    }
-    
-    public boolean canAttackTargetBeSeen(Entity p_70685_1_)
-    {
-        return this.worldObj.rayTraceBlocks(Vec3.createVectorHelper(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), Vec3.createVectorHelper(p_70685_1_.posX, p_70685_1_.posY + 0.1, p_70685_1_.posZ)) == null;
-    }
-
-    public boolean attackEntityAsMob(Entity p_70652_1_)
-    {
-    	if (this.getGrowingAge() >= 0 && this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)).getMaterial() == Material.water)
-    	{
-            float f = (float)this.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
-            int i = 0;
-
-            if (p_70652_1_ instanceof EntityLivingBase)
-            {
-                f += EnchantmentHelper.getEnchantmentModifierLiving(this, (EntityLivingBase)p_70652_1_);
-                i += EnchantmentHelper.getKnockbackModifier(this, (EntityLivingBase)p_70652_1_);
-            }
-
-            boolean flag;
-
-            if (this.getIsWild() == false && !(p_70652_1_ instanceof EntityPlayer))
-            {
-            	flag = p_70652_1_.attackEntityFrom(DamageSource.causeMobDamage(this), f + 5);
-            }
-            else
-            {
-            	flag = p_70652_1_.attackEntityFrom(DamageSource.causeMobDamage(this), f);
-            }
-
-            if (flag)
-            {
-                if (i > 0)
-                {
-                    p_70652_1_.addVelocity((double)(-MathHelper.sin(this.rotationYaw * (float)Math.PI / 180.0F) * (float)i * 0.5F), 0.1D, (double)(MathHelper.cos(this.rotationYaw * (float)Math.PI / 180.0F) * (float)i * 0.5F));
-                    this.motionX *= 0.6D;
-                    this.motionZ *= 0.6D;
-                }
-
-                int j = EnchantmentHelper.getFireAspectModifier(this);
-
-                if (j > 0)
-                {
-                    p_70652_1_.setFire(j * 4);
-                }
-
-                if (p_70652_1_ instanceof EntityLivingBase)
-                {
-                    EnchantmentHelper.func_151384_a((EntityLivingBase)p_70652_1_, this);
-                }
-
-                EnchantmentHelper.func_151385_b(this, p_70652_1_);
-            }
-
-            return flag;
-    	}
-    	else
-    	{
-    		return false;
-    	}
-    }
-
-	protected void findMobToAttack()
-	{
-		List list = this.worldObj.selectEntitiesWithinAABB(EntityMob.class, this.boundingBox.expand(16.0D, 16.0D, 16.0D), this.targetEntitySelectorMob);
-		Collections.sort(list, this.theNearestAttackableTargetSorter);
-
-		if (list.isEmpty())
-		{
-		}
-		else if (this.entityToAttack == null)
-		{
-			this.entityToAttack = (EntityLivingBase)list.get(0);
-		}
-	}
-	
-	protected void findHumanToAttack()
-	{
-		List list = this.worldObj.selectEntitiesWithinAABB(EntityPlayer.class, this.boundingBox.expand(16.0D, 16.0D, 16.0D), this.targetEntitySelectorHuman);
-		Collections.sort(list, this.theNearestAttackableTargetSorter);
-
-		if (list.isEmpty())
-		{
-		}
-		else if (this.entityToAttack == null)
-		{
-			this.entityToAttack = (EntityLivingBase)list.get(0);
+	protected void findAttackTarget(IEntitySelector selector) {
+		List list = worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, boundingBox.expand(16.0D, 16.0D, 16.0D), selector);
+		Collections.sort(list, theNearestAttackableTargetSorter);
+		if(!list.isEmpty() && entityToAttack == null) {
+			entityToAttack = (EntityLivingBase) list.get(0);
 		}
 	}
 
-	protected void findLivingToAttack()
-	{
-		List list = this.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(16.0D, 16.0D, 16.0D), this.targetEntitySelectorLiving);
-		Collections.sort(list, this.theNearestAttackableTargetSorter);
-
-		if (list.isEmpty())
-		{
-		}
-		else if (this.entityToAttack == null)
-		{
-			this.entityToAttack = (EntityLivingBase)list.get(0);
-		}
-	}
-	
 	protected Entity findPlayerToAttack()
 	{
 		return null;
 	}
 
-    public void setScaleForAge(boolean p_98054_1_, int p_98054_2_)
-    {
-    	int i = p_98054_2_ + 1;
-        this.setSize((p_98054_1_ ? (0.2F + (i * 0.2F)) / 2 : 0.2F + (i * 0.2F)), (p_98054_1_ ?( 0.025F + (i * 0.025F)) / 2 : 0.05F + (i * 0.05F)));
-    }
-    
-    public boolean isChild()
-    {
-        return this.getGrowingAge() < 0;
-    }
-    
-    public boolean attackEntityFrom(DamageSource p_70097_1_, float p_70097_2_)
-    {
-        if (this.isEntityInvulnerable())
-        {
-            return false;
-        }
-        else if (super.attackEntityFrom(p_70097_1_, p_70097_2_))
-        {
-            Entity entity = p_70097_1_.getEntity();
+	public void setScaleForAge(boolean isChild, int size)
+	{
+		int i = size + 1;
+		this.setSize((isChild ? (0.2F + (i * 0.2F)) / 2 : 0.2F + (i * 0.2F)), (isChild ? (0.025F + (i * 0.025F)) / 2 : 0.05F + (i * 0.05F)));
+	}
 
-            if (this.riddenByEntity != entity && this.ridingEntity != entity)
-            {
-            	if (entity != this && this.getAge() >= 0)
-            	{
-            		this.entityToAttack = entity;
-            	}
+	public boolean isChild()
+	{
+		return this.getGrowingAge() < 0;
+	}
 
-            	return true;
-            }
-            else
-            {
-                return true;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
-    
-    public boolean interact(EntityPlayer p_70085_1_)
-    {
-        ItemStack itemstack = p_70085_1_.inventory.getCurrentItem();
-        
-        if (itemstack != null && itemstack.getItem() == Items.water_bucket && this.getIsWild() == false && this.getIsSeaMonster() == false && !this.worldObj.isRemote)
-        {
-        	int i;
-        	
-        	if (this.getGrowingAge() >= 0 && this.getSize() == 0)
-        	{
-        		i = 1;
-        	}
-        	else if (this.getGrowingAge() < 0 && this.getSize() == 0)
-        	{
-        		i = 2;
-        	}
-        	else if (this.getGrowingAge() < 0 && this.getSize() == 1)
-        	{
-        		i = 3;
-        	}
-        	else if (this.getGrowingAge() < 0 && this.getSize() == 2)
-        	{
-        		i = 0;
-        	}
-        	else
-        	{
-        		i = 4;
-        	}
-        	
-        	if (i < 4)
-        	{
-        		if (itemstack.stackSize-- == 1)
-        		{
-        			p_70085_1_.inventory.setInventorySlotContents(p_70085_1_.inventory.currentItem, new ItemStack(WildMobsModItems.seaScorpionBucket, 1, i));
-        			this.setDead();
-        		}
-        		else if (!p_70085_1_.inventory.addItemStackToInventory(new ItemStack(WildMobsModItems.seaScorpionBucket, 1)))
-        		{
-        			p_70085_1_.dropPlayerItemWithRandomChoice(new ItemStack(WildMobsModItems.seaScorpionBucket, 1, i), false);
-        			this.setDead();
-        		}
-                return true;
-        	}
-        	else
-        	{
-        		return super.interact(p_70085_1_);
-        	}
-        }
-        else if (itemstack != null && itemstack.getItem() == WildMobsModItems.seaScorpionSpawnEgg && !this.worldObj.isRemote)
-		{
-        	EntitySeaScorpion entityseascorpion = new EntitySeaScorpion(this.worldObj);
-        	entityseascorpion.setGrowingAge(-24000);
-        	entityseascorpion.setSize(this.getSize());
-        	entityseascorpion.setIsWild(this.getIsWild());
-        	entityseascorpion.setIsSeaMonster(this.getIsSeaMonster());
-        	entityseascorpion.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
-        	worldObj.spawnEntityInWorld(entityseascorpion);
-
-            if (itemstack.hasDisplayName())
-            {
-            	entityseascorpion.setCustomNameTag(itemstack.getDisplayName());
-            }
-
-            if (!p_70085_1_.capabilities.isCreativeMode)
-            {
-                --itemstack.stackSize;
-
-                if (itemstack.stackSize <= 0)
-                {
-                    p_70085_1_.inventory.setInventorySlotContents(p_70085_1_.inventory.currentItem, (ItemStack)null);
-                }
-            }
+	public boolean attackEntityFrom(DamageSource source, float amount) {
+		if(!isEntityInvulnerable() && super.attackEntityFrom(source, amount)) {
+			Entity entity = source.getEntity();
+			if(riddenByEntity != entity && ridingEntity != entity && entity != this && getAge() >= 0) {
+				this.entityToAttack = entity;
+			}
 			return true;
 		}
-        else if (itemstack.getItem() instanceof ItemFood && !this.worldObj.isRemote)
-        {
-        	ItemFood itemfood = (ItemFood)itemstack.getItem();
+		return false;
+	}
 
-        	if (itemstack != null && this.isHealingItem(itemstack) == true && this.getHealth() < this.getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue() && this.getIsWild() == false)
-        	{
-        		if (!p_70085_1_.capabilities.isCreativeMode)
-        		{
-        			--itemstack.stackSize;
-        		}
+	public boolean interact(EntityPlayer player) {
+		final ItemStack stack = player.inventory.getCurrentItem();
+		if(!worldObj.isRemote && stack != null) {
+			final Item item = stack.getItem();
+			if(item == Items.water_bucket && !getIsWild() && !getIsSeaMonster())
+			{
+				int i = 4;
+				if(getGrowingAge() >= 0 && getSize() == 0) {
+					i = 1;
+				}
+				else if(getGrowingAge() < 0) {
+					switch(getSize()) {
+						case 0 : i = 2; break;
+						case 1 : i = 3; break;
+						case 2 : i = 0; break;
+					}
+				}
+				if(i < 4) {
+					ItemStack bucket = new ItemStack(WildMobsModItems.seaScorpionBucket, 1, i);
+					if(--stack.stackSize < 1) {
+						player.inventory.setInventorySlotContents(player.inventory.currentItem, bucket);
+					} else if(!player.inventory.addItemStackToInventory(bucket)) {
+						player.dropPlayerItemWithRandomChoice(bucket, false);
+					}
+					this.setDead();
+					return true;
+				} else {
+					return super.interact(player);
+				}
+			} else if(item == WildMobsModItems.seaScorpionSpawnEgg) {
+				EntitySeaScorpion entityseascorpion = new EntitySeaScorpion(worldObj);
+				entityseascorpion.setGrowingAge(-24000);
+				entityseascorpion.setSize(getSize());
+				entityseascorpion.setIsWild(getIsWild());
+				entityseascorpion.setIsSeaMonster(getIsSeaMonster());
+				entityseascorpion.setLocationAndAngles(posX, posY, posZ, 0.0F, 0.0F);
+				worldObj.spawnEntityInWorld(entityseascorpion);
+				if(stack.hasDisplayName()) {
+					entityseascorpion.setCustomNameTag(stack.getDisplayName());
+				}
+				if(!player.capabilities.isCreativeMode) {
+					if(--stack.stackSize < 1) {
+						player.destroyCurrentEquippedItem();
+					}
+				}
+				return true;
+			} else if(item instanceof ItemFood) {
+				ItemFood itemfood = (ItemFood) item;
+				if(isHealingItem(stack) == true && getHealth() < getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue() && !getIsWild()) {
+					if(!player.capabilities.isCreativeMode) {
+						stack.stackSize--;
+					}
+					heal((float) itemfood.func_150905_g(stack));
+					food = stack;
+					eatingTimer = 10;
+					if(stack.stackSize < 1) {
+						player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack) null);
+					}
+					return true;
+				} else {
+					return super.interact(player);
+				}
+			}
+		}
+		return super.interact(player);
+	}
 
-        		this.heal((float)itemfood.func_150905_g(itemstack));
-        		
-        		this.food = itemstack;
-        		this.eatingTimer = 10;
-        		
-        		if (itemstack.stackSize <= 0)
-        		{
-        			p_70085_1_.inventory.setInventorySlotContents(p_70085_1_.inventory.currentItem, (ItemStack)null);
-        		}
-
-        		return true;
-        	}
-        	else
-        	{
-        		return super.interact(p_70085_1_);
-        	}
-        }
-        else
-        {
-        	return super.interact(p_70085_1_);
-        }
-    }
-
-	public boolean isHealingItem(ItemStack p_70877_1_)
-    {
-    	Item[] suitableFoods;
-    	
-    	suitableFoods = new Item[MainRegistry.seaScorpionSuitableFoods.length];
-    	
-    	for (int k = 0; k < MainRegistry.seaScorpionSuitableFoods.length; ++k)
-    	{
-    		suitableFoods[k] = MainRegistry.getItem(MainRegistry.listToString(MainRegistry.seaScorpionSuitableFoods, k));
-    	}
-
-    	return p_70877_1_ != null && Arrays.asList(suitableFoods).contains(p_70877_1_.getItem());
-    }
+	public boolean isHealingItem(ItemStack stack)
+	{
+		if(stack == null) return false;
+		Item item = stack.getItem();
+		return item == Items.fish || item == WildMobsModItems.rawCalamari;
+	}
 
 	public static class Sorter implements Comparator
 	{
 		private final Entity theEntity;
 
-		public Sorter(Entity p_i1662_1_)
+		public Sorter(Entity entity)
 		{
-			this.theEntity = p_i1662_1_;
+			this.theEntity = entity;
 		}
 
-		public int compare(Entity p_compare_1_, Entity p_compare_2_)
+		public int compare(Entity entity1, Entity entity2)
 		{
-			double d0 = this.theEntity.getDistanceSqToEntity(p_compare_1_);
-			double d1 = this.theEntity.getDistanceSqToEntity(p_compare_2_);
-			return d0 < d1 ? -1 : (d0 > d1 ? 1 : 0);
+			double distance1 = this.theEntity.getDistanceSqToEntity(entity1);
+			double distance2 = this.theEntity.getDistanceSqToEntity(entity2);
+			return distance1 < distance2 ? -1 : (distance1 > distance2 ? 1 : 0);
 		}
 
-		public int compare(Object p_compare_1_, Object p_compare_2_)
+		public int compare(Object obj1, Object obj2)
 		{
-			return this.compare((Entity)p_compare_1_, (Entity)p_compare_2_);
+			return this.compare((Entity) obj1, (Entity) obj2);
 		}
 	}
 
-	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_)
+	protected void dropFewItems(boolean playerkill, int looting)
 	{
-		if (this.getGrowingAge() >= 0)
-		{
-			int i = this.rand.nextInt(1 + this.getSize()) + this.rand.nextInt(1 + p_70628_2_);
-			int j = this.rand.nextInt(100);
-			int l = this.rand.nextInt(100);
+		if(this.getGrowingAge() >= 0) {
+			int amount = rand.nextInt(1 + getSize()) + rand.nextInt(1 + looting);
+			int type = rand.nextInt(100);
 
-			for (int k = 0; k < i; ++k)
-			{
-				if (this.isBurning())
-				{
-					if (j >= 0 && j < 60)
-					{
-						this.entityDropItem(new ItemStack(Items.cooked_fished, 1, 0), 0.0F);
+			for(int k = 0; k < amount; ++k) {
+				if(isBurning()) {
+					if(type < 60) {
+						entityDropItem(new ItemStack(Items.cooked_fished, 1, 0), 0.0F);
+					} else if(type < 85) {
+						entityDropItem(new ItemStack(Items.cooked_fished, 1, 1), 0.0F);
+					} else if(type < 87) {
+						entityDropItem(new ItemStack(Items.fish, 1, 2), 0.0F);
+					} else {
+						entityDropItem(new ItemStack(Items.fish, 1, 3), 0.0F);
 					}
-					else if (j >= 60 && j < 85)
-					{
-						this.entityDropItem(new ItemStack(Items.cooked_fished, 1, 1), 0.0F);
-					}
-					else if (j >= 85 && j < 87)
-					{
-						this.entityDropItem(new ItemStack(Items.fish, 1, 2), 0.0F);
-					}
-					else
-					{
-						this.entityDropItem(new ItemStack(Items.fish, 1, 3), 0.0F);
-					}
-				}
-				else
-				{
-					if (j >= 0 && j < 60)
-					{
-						this.entityDropItem(new ItemStack(Items.fish, 1, 0), 0.0F);
-					}
-					else if (j >= 60 && j < 85)
-					{
-						this.entityDropItem(new ItemStack(Items.fish, 1, 1), 0.0F);
-					}
-					else if (j >= 85 && j < 87)
-					{
-						this.entityDropItem(new ItemStack(Items.fish, 1, 2), 0.0F);
-					}
-					else
-					{
-						this.entityDropItem(new ItemStack(Items.fish, 1, 3), 0.0F);
+				} else {
+					if(type < 60) {
+						entityDropItem(new ItemStack(Items.fish, 1, 0), 0.0F);
+					} else if(type < 85) {
+						entityDropItem(new ItemStack(Items.fish, 1, 1), 0.0F);
+					} else if(type < 87) {
+						entityDropItem(new ItemStack(Items.fish, 1, 2), 0.0F);
+					} else {
+						entityDropItem(new ItemStack(Items.fish, 1, 3), 0.0F);
 					}
 				}
 			}
 
-			if (l <= 4 + this.getSize() + p_70628_2_)
-			{
-				this.dropItem(WildMobsModItems.seaScorpionEgg, 1);
+			if(this.rand.nextInt(100) <= 4 + getSize() + looting) {
+				dropItem(WildMobsModItems.seaScorpionEgg, 1);
 			}
 		}
 	}
 
-	public IEntityLivingData onSpawnWithEgg(IEntityLivingData p_110161_1_)
-    {
-    	p_110161_1_ = super.onSpawnWithEgg(p_110161_1_);
-    	
-    	int i = this.rand.nextInt(8);
-    	
-    	if (i == 0 || i == 1 || i == 2 || i == 3)
-    	{
-    		this.setSize(1);
-    	}
-    	else if (i == 4 || i == 5 || i == 6)
-    	{
-    		this.setSize(2);
-    	}
-    	else
-    	{
-    		this.setSize(4);
-    	}
-    	
-    	this.setIsWild(true);
-    	return p_110161_1_;
-    }
+	public IEntityLivingData onSpawnWithEgg(IEntityLivingData data)
+	{
+		data = super.onSpawnWithEgg(data);
+		int size = 4;
+		int i = rand.nextInt(8);
+		if(i < 4) {
+			size = 1;
+		} else if(i < 7) {
+			size = 2;
+		}
+		setSize(size);
+		setIsWild(true);
+		return data;
+	}
 
-    public void spawnPack()
-    {
-    	for (int k = 0; k < 3; ++k)
-    	{
-    		double x;
-    		double y;
-    		double z;
+	public void trySpawnPack() {
+		if(!canSpawnPack) return;
+		for(int k = 0; k < 3; ++k) {
+			double x = posX + worldObj.rand.nextInt(5) - worldObj.rand.nextInt(5);
+			double y = posY + worldObj.rand.nextInt(2) - worldObj.rand.nextInt(2);
+			double z = posZ + worldObj.rand.nextInt(5) - worldObj.rand.nextInt(5);
 
-    		x = this.posX + this.worldObj.rand.nextInt(5)- this.worldObj.rand.nextInt(5);
-    		y = this.posY + this.worldObj.rand.nextInt(2)- this.worldObj.rand.nextInt(2);
-    		z = this.posZ + this.worldObj.rand.nextInt(5)- this.worldObj.rand.nextInt(5);
+			EntitySeaScorpion entityseascorpion = new EntitySeaScorpion(worldObj);
+			entityseascorpion.setPosition(x, y, z);
+			entityseascorpion.onSpawnWithEgg((IEntityLivingData) null);
+			entityseascorpion.setSize(getSize());
+			entityseascorpion.canSpawnPack = false;
+			if(entityseascorpion.getCanSpawnHere()) {
+				worldObj.spawnEntityInWorld(entityseascorpion);
+			}
+		}
+	}
 
-    		EntitySeaScorpion entityseascorpion = new EntitySeaScorpion(this.worldObj);
-    		entityseascorpion.setPosition(x, y, z);
-    		entityseascorpion.onSpawnWithEgg((IEntityLivingData)null);
-    		entityseascorpion.setSize(this.getSize());
-    		if (entityseascorpion.getCanSpawnHere() == true)
-    		{
-    			this.worldObj.spawnEntityInWorld(entityseascorpion);
-    		}
-    	}
-    }
+	public boolean canSeaScorpionSeeSky()
+	{
+		boolean flag = false;
 
-    public boolean canSeaScorpionSeeSky()
-    {
-    	boolean returnTrue = false;
+		int i = 0;
 
-    	int i = 0;
+		int x = MathHelper.floor_double(this.posX);
+		int y = MathHelper.floor_double(this.boundingBox.minY);
+		int z = MathHelper.floor_double(this.posZ);
 
-    	int x = MathHelper.floor_double(this.posX);
-    	int y = MathHelper.floor_double(this.boundingBox.minY);
-    	int z = MathHelper.floor_double(this.posZ);
+		for(int k = y; k < 255; ++k)
+		{
+			Block block = this.worldObj.getBlock(x, k, z);
 
-    	for (int k = y; k < 255; ++k)
-    	{
-    		Block block = this.worldObj.getBlock(x, k, z);
+			if(block.isNormalCube())
+			{
+				k = 255;
+				flag = false;
+			}
+			else
+			{
+				if(k >= 255)
+				{
+					flag = true;
+				}
+			}
 
-    		if (block.isNormalCube())
-    		{
-    			k = 255;
-    			returnTrue = false;
-    		}
-    		else
-    		{
-    			if (k >= 255)
-    			{
-    				returnTrue = true;
-    			}
-    		}
+			i = k;
+		}
 
-    		i = k;
-    	}
-
-    	return returnTrue;
-    }
+		return flag;
+	}
 
 	public boolean getCanSpawnHere()
 	{
-		int i = MathHelper.floor_double(this.posX);
-		int j = MathHelper.floor_double(this.boundingBox.minY);
-		int k = MathHelper.floor_double(this.posZ);
-		Block block = this.worldObj.getBlock(i, j, k);
-    	
-		if (this.worldObj.isDaytime() && !this.worldObj.getWorldInfo().isThundering())
+		int x = MathHelper.floor_double(posX);
+		int y = MathHelper.floor_double(boundingBox.minY);
+		int z = MathHelper.floor_double(posZ);
+		Block block = worldObj.getBlock(x, y, z);
+		boolean flag = worldObj.difficultySetting != EnumDifficulty.PEACEFUL && isValidLightLevel() && worldObj.checkNoEntityCollision(boundingBox) && worldObj.getCollidingBoundingBoxes(this, boundingBox).isEmpty() && block.getMaterial() == Material.water;
+		if(flag && worldObj.isDaytime() && !worldObj.getWorldInfo().isThundering())
 		{
-			return this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL && this.isValidLightLevel() && this.worldObj.checkNoEntityCollision(this.boundingBox) && this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox).isEmpty() && block.getMaterial() == Material.water && this.canSeaScorpionSeeSky() == true;
+			return this.canSeaScorpionSeeSky();
 		}
-		else
-		{
-			return this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL && this.isValidLightLevel() && this.worldObj.checkNoEntityCollision(this.boundingBox) && this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox).isEmpty() && block.getMaterial() == Material.water;
-		}
+		return flag;
 	}
 }

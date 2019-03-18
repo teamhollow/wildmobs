@@ -7,12 +7,13 @@ import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 
 public class EntityAIFadedNearestAttackableTarget extends EntityAINearestAttackableTarget
 {
-	public EntityAIFadedNearestAttackableTarget(EntityCreature p_i1663_1_, Class p_i1663_2_, int p_i1663_3_, boolean p_i1663_4_) {
-		super(p_i1663_1_, p_i1663_2_, p_i1663_3_, p_i1663_4_);
+	public EntityAIFadedNearestAttackableTarget(EntityCreature creature, Class targetClass, int chance, boolean checkSight)
+	{
+		super(creature, targetClass, chance, checkSight);
 	}
 
 	public boolean shouldExecute()
 	{
-		return (((EntityFaded)this.taskOwner).getEquipmentInSlot(0) == null || ((EntityFaded)this.taskOwner).getHandEquipment() == null) && super.shouldExecute();
+		return (((EntityFaded) this.taskOwner).getEquipmentInSlot(0) == null || ((EntityFaded) this.taskOwner).getHandEquipment() == null) && super.shouldExecute();
 	}
 }

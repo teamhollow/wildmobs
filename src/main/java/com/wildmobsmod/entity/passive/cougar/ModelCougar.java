@@ -6,12 +6,11 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.util.MathHelper;
 
 public class ModelCougar extends ModelBase
 {
-	//fields
+	// fields
 	ModelRenderer head;
 	ModelRenderer body;
 	ModelRenderer neck;
@@ -24,18 +23,18 @@ public class ModelCougar extends ModelBase
 	ModelRenderer ear2;
 	ModelRenderer nose;
 
-	protected void convertToChild(ModelRenderer parParent, ModelRenderer parChild)
+	protected static void convertToChild(ModelRenderer parent, ModelRenderer child)
 	{
 		// move child rotation point to be relative to parent
-		parChild.rotationPointX -= parParent.rotationPointX;
-		parChild.rotationPointY -= parParent.rotationPointY;
-		parChild.rotationPointZ -= parParent.rotationPointZ;
+		child.rotationPointX -= parent.rotationPointX;
+		child.rotationPointY -= parent.rotationPointY;
+		child.rotationPointZ -= parent.rotationPointZ;
 		// make rotations relative to parent
-		parChild.rotateAngleX -= parParent.rotateAngleX;
-		parChild.rotateAngleY -= parParent.rotateAngleY;
-		parChild.rotateAngleZ -= parParent.rotateAngleZ;
+		child.rotateAngleX -= parent.rotateAngleX;
+		child.rotateAngleY -= parent.rotateAngleY;
+		child.rotateAngleZ -= parent.rotateAngleZ;
 		// create relationship
-		parParent.addChild(parChild);
+		parent.addChild(child);
 	}
 
 	public ModelCougar()
@@ -110,7 +109,7 @@ public class ModelCougar extends ModelBase
 	{
 		super.render(entity, f, f1, f2, f3, f4, f5);
 		setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-		if (this.isChild)
+		if(this.isChild)
 		{
 			float f6 = 2.0F;
 			GL11.glPushMatrix();
@@ -137,7 +136,7 @@ public class ModelCougar extends ModelBase
 			leg2.render(f5);
 			leg3.render(f5);
 			leg4.render(f5);
-			tail.render(f5); 
+			tail.render(f5);
 		}
 	}
 
@@ -151,15 +150,15 @@ public class ModelCougar extends ModelBase
 	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
 	{
 		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-		this.head.rotateAngleX = f4 / (180F / (float)Math.PI);
-		this.head.rotateAngleY = f3 / (360F / (float)Math.PI);
+		this.head.rotateAngleX = f4 / (180F / (float) Math.PI);
+		this.head.rotateAngleY = f3 / (360F / (float) Math.PI);
 		this.head.rotationPointZ = -8.2F;
 		this.tail.rotateAngleZ = MathHelper.cos(f * 0.666F) * 0.5F * f1;
 	}
 
-	public void setLivingAnimations(EntityLivingBase p_78086_1_, float p_78086_2_, float p_78086_3_, float p_78086_4_)
+	public void setLivingAnimations(EntityLivingBase living, float f1, float f2, float f3)
 	{
-		EntityCougar entitycougar = (EntityCougar)p_78086_1_;
+		EntityCougar entitycougar = (EntityCougar) living;
 
 		this.body.rotationPointY = 11.0F;
 		this.head.rotationPointY = 9.0F;
@@ -169,10 +168,10 @@ public class ModelCougar extends ModelBase
 		this.leg3.rotationPointY = 12.0F;
 		this.leg4.rotationPointY = 12.0F;
 
-		if (entitycougar.isSneaking())
+		if(entitycougar.isSneaking())
 		{
 			this.body.rotationPointY += 3.0F;
-			if (this.isChild)
+			if(this.isChild)
 			{
 				this.head.rotationPointY += 2.5F;
 			}
@@ -192,10 +191,10 @@ public class ModelCougar extends ModelBase
 		}
 		else
 		{
-			this.leg1.rotateAngleX = MathHelper.cos(p_78086_2_ * 0.6662F) * 1.4F * p_78086_3_;
-			this.leg2.rotateAngleX = MathHelper.cos(p_78086_2_ * 0.6662F + (float)Math.PI) * 1.4F * p_78086_3_;
-			this.leg3.rotateAngleX = MathHelper.cos(p_78086_2_ * 0.6662F + (float)Math.PI) * 1.4F * p_78086_3_;
-			this.leg4.rotateAngleX = MathHelper.cos(p_78086_2_ * 0.6662F) * 1.4F * p_78086_3_;
+			this.leg1.rotateAngleX = MathHelper.cos(f1 * 0.6662F) * 1.4F * f2;
+			this.leg2.rotateAngleX = MathHelper.cos(f1 * 0.6662F + (float) Math.PI) * 1.4F * f2;
+			this.leg3.rotateAngleX = MathHelper.cos(f1 * 0.6662F + (float) Math.PI) * 1.4F * f2;
+			this.leg4.rotateAngleX = MathHelper.cos(f1 * 0.6662F) * 1.4F * f2;
 		}
 	}
 }

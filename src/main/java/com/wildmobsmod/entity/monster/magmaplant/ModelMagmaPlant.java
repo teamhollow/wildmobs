@@ -4,26 +4,16 @@
 // Keep in mind that you still need to fill in some blanks
 // - ZeuX
 
-
-
-
-
-
 package com.wildmobsmod.entity.monster.magmaplant;
-
-import com.wildmobsmod.entity.monster.wizard.EntityWizard;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityHorse;
-import net.minecraft.util.MathHelper;
 
 public class ModelMagmaPlant extends ModelBase
 {
-	//fields
-	//Stage 3
+	// fields
+	// Stage 3
 	ModelRenderer base;
 	ModelRenderer mouth;
 	ModelRenderer crest;
@@ -38,7 +28,7 @@ public class ModelMagmaPlant extends ModelBase
 	ModelRenderer petal3;
 	ModelRenderer petal4;
 
-	//Stage 2
+	// Stage 2
 	ModelRenderer base1;
 	ModelRenderer mouth1;
 	ModelRenderer crest1;
@@ -46,22 +36,22 @@ public class ModelMagmaPlant extends ModelBase
 	ModelRenderer petal21;
 	ModelRenderer petal31;
 	ModelRenderer petal41;
-	
-	//Stage 1
-    ModelRenderer base2;
-    ModelRenderer mouth2;
-    ModelRenderer crest2;
-    
-    //Stage 0
-    ModelRenderer base3;
-    ModelRenderer mouth3;
+
+	// Stage 1
+	ModelRenderer base2;
+	ModelRenderer mouth2;
+	ModelRenderer crest2;
+
+	// Stage 0
+	ModelRenderer base3;
+	ModelRenderer mouth3;
 
 	public ModelMagmaPlant()
 	{
 		textureWidth = 128;
 		textureHeight = 64;
 
-		//Stage 3
+		// Stage 3
 		base = new ModelRenderer(this, 0, 16);
 		base.addBox(-6F, 0F, -6F, 12, 7, 12);
 		base.setRotationPoint(0F, 17F, 0F);
@@ -128,7 +118,7 @@ public class ModelMagmaPlant extends ModelBase
 		petal4.setTextureSize(128, 64);
 		setRotation(petal4, -0.9250245F, -1.570796F, 0F);
 
-		//Stage 2
+		// Stage 2
 		base1 = new ModelRenderer(this, 0, 13);
 		base1.addBox(-4.5F, 0F, -4.5F, 9, 6, 9);
 		base1.setRotationPoint(0F, 18F, 0F);
@@ -172,7 +162,7 @@ public class ModelMagmaPlant extends ModelBase
 		petal41.mirror = true;
 		setRotation(petal41, -0.1745329F, -1.570796F, 0F);
 
-        //Stage 1
+		// Stage 1
 		base2 = new ModelRenderer(this, 0, 13);
 		base2.addBox(-2.5F, 0F, -2.5F, 5, 5, 5);
 		base2.setRotationPoint(0F, 19F, 0F);
@@ -192,7 +182,7 @@ public class ModelMagmaPlant extends ModelBase
 		crest2.mirror = true;
 		setRotation(crest2, 0F, 0F, 0F);
 
-		//Stage 0
+		// Stage 0
 		base3 = new ModelRenderer(this, 0, 13);
 		base3.addBox(-1.5F, 0F, -1.5F, 3, 4, 3);
 		base3.setRotationPoint(0F, 20F, 0F);
@@ -211,8 +201,8 @@ public class ModelMagmaPlant extends ModelBase
 	{
 		super.render(entity, f, f1, f2, f3, f4, f5);
 		setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-		EntityMagmaPlant entitymagmaplant = (EntityMagmaPlant)entity;
-		if (entitymagmaplant.getStage() == 2)
+		EntityMagmaPlant entitymagmaplant = (EntityMagmaPlant) entity;
+		if(entitymagmaplant.getStage() == 2)
 		{
 			base1.render(f5);
 			mouth1.render(f5);
@@ -222,16 +212,16 @@ public class ModelMagmaPlant extends ModelBase
 			petal31.render(f5);
 			petal41.render(f5);
 		}
-		else if (entitymagmaplant.getStage() == 1)
+		else if(entitymagmaplant.getStage() == 1)
 		{
 			base2.render(f5);
 			mouth2.render(f5);
 			crest2.render(f5);
 		}
-		else if (entitymagmaplant.getStage() == 0)
+		else if(entitymagmaplant.getStage() == 0)
 		{
-		    base3.render(f5);
-		    mouth3.render(f5);
+			base3.render(f5);
+			mouth3.render(f5);
 		}
 		else
 		{

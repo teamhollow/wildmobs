@@ -8,28 +8,27 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class ItemSeaScorpionEgg extends Item
+public class ItemSeaScorpionEgg extends ItemWM
 {
-	public ItemSeaScorpionEgg(){
-        this.maxStackSize = 16;
-		this.setCreativeTab(CreativeTabs.tabMisc);
-		this.setTextureName("wildmobsmod:sea_scorpion_egg");
-    }
-	
-    public ItemStack onItemRightClick(ItemStack p_77659_1_, World p_77659_2_, EntityPlayer p_77659_3_)
-    {
-        if (!p_77659_3_.capabilities.isCreativeMode)
-        {
-            --p_77659_1_.stackSize;
-        }
+	public ItemSeaScorpionEgg()
+	{
+		this.setMaxStackSize(16);
+	}
 
-        p_77659_2_.playSoundAtEntity(p_77659_3_, "random.bow", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
+	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
+	{
+		if(!player.capabilities.isCreativeMode)
+		{
+			--stack.stackSize;
+		}
 
-        if (!p_77659_2_.isRemote)
-        {
-            p_77659_2_.spawnEntityInWorld(new EntitySeaScorpionEgg(p_77659_2_, p_77659_3_));
-        }
+		world.playSoundAtEntity(player, "random.bow", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
 
-        return p_77659_1_;
-    }
+		if(!world.isRemote && world.rand.nextBoolean())
+		{
+			world.spawnEntityInWorld(new EntitySeaScorpionEgg(world, player));
+		}
+
+		return stack;
+	}
 }

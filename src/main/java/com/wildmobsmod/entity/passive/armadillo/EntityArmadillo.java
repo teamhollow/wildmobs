@@ -1,7 +1,7 @@
 package com.wildmobsmod.entity.passive.armadillo;
 
 import com.wildmobsmod.items.WildMobsModItems;
-import com.wildmobsmod.main.MainRegistry;
+import com.wildmobsmod.main.WildMobsMod;
 
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -24,48 +24,25 @@ import net.minecraft.world.World;
 
 public class EntityArmadillo extends EntityAnimal
 {
-	@Override
-	protected void entityInit() {
-		super.entityInit();
-        this.dataWatcher.addObject(20, Byte.valueOf((byte)0));
-	}
-    public void writeEntityToNBT(NBTTagCompound entity)
-    {
-        super.writeEntityToNBT(entity);
-        entity.setInteger("BallTimer", this.getBallTimer());
-    }
-
-    public void readEntityFromNBT(NBTTagCompound entity)
-    {
-        super.readEntityFromNBT(entity);
-        this.setBallTimer(entity.getInteger("BallTimer"));
-    }
-
-    public int getBallTimer()
-    {
-        return this.dataWatcher.getWatchableObjectByte(20);
-    }
-
-    public void setBallTimer(int entity)
-    {
-        this.dataWatcher.updateObject(20, Byte.valueOf((byte)entity));
-    }
-	
-	public EntityArmadillo(World par1World) {
-		super(par1World);
+	public EntityArmadillo(World world)
+	{
+		super(world);
 		this.setSize(0.4F, 0.5F);
 		this.getNavigator().setAvoidsWater(true);
 		this.tasks.addTask(0, new EntityAISwimming(this));
 		this.tasks.addTask(1, new EntityAIMate(this, 1.0D));
-		if (MainRegistry.enableButterfly == true)
+		boolean flag = false;
+		if(WildMobsMod.BUTTERFLY_CONFIG.isEnabled())
 		{
 			this.tasks.addTask(2, new EntityAITempt(this, 1.25D, WildMobsModItems.butterfly, false));
+			flag = true;
 		}
-		if (MainRegistry.enableDragonfly == true)
+		if(WildMobsMod.DRAGONFLY_CONFIG.isEnabled())
 		{
 			this.tasks.addTask(2, new EntityAITempt(this, 1.25D, WildMobsModItems.dragonfly, false));
+			flag = true;
 		}
-		if (MainRegistry.enableButterfly == false && MainRegistry.enableDragonfly == false)
+		if(!flag)
 		{
 			this.tasks.addTask(2, new EntityAITempt(this, 1.25D, Items.wheat_seeds, false));
 			this.tasks.addTask(2, new EntityAITempt(this, 1.25D, Items.pumpkin_seeds, false));
@@ -77,164 +54,173 @@ public class EntityArmadillo extends EntityAnimal
 		this.tasks.addTask(6, new EntityAILookIdle(this));
 	}
 
-    public int getMaxSpawnedInChunk()
-    {
-        return 1;
-    }
+	public int getMaxSpawnedInChunk()
+	{
+		return WildMobsMod.ARMADILLO_CONFIG.getMaxPackSize();
+	}
 
-	public boolean isAIEnabled(){
+	public boolean isAIEnabled()
+	{
 		return true;
 	}
-	
-	protected void applyEntityAttributes(){
+
+	protected void applyEntityAttributes()
+	{
 		super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(6.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.25D);
+		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(6.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.25D);
 	}
-    
-    public boolean attackEntityFrom(DamageSource p_70097_1_, float p_70097_2_)
-    {
-        if (this.isEntityInvulnerable())
-        {
-            return false;
-        }
-        else
-        {
-        	if (p_70097_1_ instanceof EntityDamageSource && p_70097_1_.isProjectile() == false)
-        	{
-        		this.setBallTimer(100);
-        		return false;
-        	}
-        	else if (p_70097_1_.isProjectile() == true && this.getBallTimer() > 0)
-        	{
-        		return false;
-        	}
-        	else
-        	{
-        		return super.attackEntityFrom(p_70097_1_, p_70097_2_);
-        	}
-        }
-    }
 
-    /**
-     * Returns the sound this mob makes when it is hurt.
-     */
-    protected String getHurtSound()
-    {
-        return "wildmobsmod:mob.armadillo.hurt";
-    }
+	protected void entityInit()
+	{
+		super.entityInit();
+		this.dataWatcher.addObject(20, Byte.valueOf((byte) 0));
+	}
 
-    /**
-     * Returns the sound this mob makes on death.
-     */
-    protected String getDeathSound()
-    {
-        return "wildmobsmod:mob.armadillo.hurt";
-    }
-    
-    protected float getSoundVolume()
-    {
-        return 0.4F;
-    }
-    
-    /**
-     * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
-     * the animal type)
-     */
-    public boolean isBreedingItem(ItemStack p_70877_1_)
-    {
-    	if (MainRegistry.enableButterfly == true && MainRegistry.enableDragonfly == true)
-    	{
-    		return p_70877_1_.getItem() == WildMobsModItems.butterfly || p_70877_1_.getItem() == WildMobsModItems.dragonfly;
-    	}
-    	else if (MainRegistry.enableButterfly == true && MainRegistry.enableDragonfly == false)
-    	{
-    		return p_70877_1_.getItem() == WildMobsModItems.butterfly;
-    	}
-    	else if (MainRegistry.enableButterfly == false && MainRegistry.enableDragonfly == true)
-    	{
-    		return p_70877_1_.getItem() == WildMobsModItems.dragonfly;
-    	}
-    	else
-    	{
-            return p_70877_1_ != null && p_70877_1_.getItem() instanceof ItemSeeds;
-    	}
-    }
-    
-    public boolean interact(EntityPlayer p_70085_1_)
-    {
-    	ItemStack itemstack = p_70085_1_.inventory.getCurrentItem();
+	public void writeEntityToNBT(NBTTagCompound nbt)
+	{
+		super.writeEntityToNBT(nbt);
+		nbt.setInteger("BallTimer", this.getBallTimer());
+	}
 
-    	if (super.interact(p_70085_1_))
-    	{
-    		return true;
-    	}
-    	else if (!this.worldObj.isRemote)
-    	{
-    		if (itemstack != null && itemstack.getItem() == WildMobsModItems.armadilloSpawnEgg)
-    		{
-            	EntityArmadillo entityageable = this.createChild(this);
-                entityageable.setGrowingAge(-24000);
-            	entityageable.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
-            	worldObj.spawnEntityInWorld(entityageable);
+	public void readEntityFromNBT(NBTTagCompound nbt)
+	{
+		super.readEntityFromNBT(nbt);
+		this.setBallTimer(nbt.getInteger("BallTimer"));
+	}
 
-                if (itemstack.hasDisplayName())
-                {
-                    entityageable.setCustomNameTag(itemstack.getDisplayName());
-                }
+	public int getBallTimer()
+	{
+		return this.dataWatcher.getWatchableObjectByte(20);
+	}
 
-                if (!p_70085_1_.capabilities.isCreativeMode)
-                {
-                    --itemstack.stackSize;
+	public void setBallTimer(int time)
+	{
+		this.dataWatcher.updateObject(20, Byte.valueOf((byte) time));
+	}
+	
+	public boolean attackEntityFrom(DamageSource source, float amount)
+	{
+		if(this.isEntityInvulnerable())
+		{
+			return false;
+		}
+		else
+		{
+			if(source instanceof EntityDamageSource && !source.isProjectile())
+			{
+				this.setBallTimer(100);
+				return false;
+			}
+			else if(source.isProjectile() && this.getBallTimer() > 0)
+			{
+				return false;
+			}
+			else
+			{
+				return super.attackEntityFrom(source, amount);
+			}
+		}
+	}
 
-                    if (itemstack.stackSize <= 0)
-                    {
-                        p_70085_1_.inventory.setInventorySlotContents(p_70085_1_.inventory.currentItem, (ItemStack)null);
-                    }
-                }
-    			return true;
-    		}
-    		else
-    		{
-    			return false;
-    		}
-    	}
-    	else
-    	{
-    		return false;
-    	}
-    }
-    
-    protected void dropFewItems(boolean p_70628_1_, int p_70628_2_)
-    {
-    	int j = this.rand.nextInt(3) + 2 + this.rand.nextInt(1 + p_70628_2_);
+	protected String getHurtSound()
+	{
+		return "wildmobsmod:entity.armadillo.hurt";
+	}
 
-    	for (int k = 0; k < j; ++k)
-    	{
-    		this.dropItem(WildMobsModItems.armadilloShell, 1);
-    	}
-    }
+	protected String getDeathSound()
+	{
+		return "wildmobsmod:entity.armadillo.hurt";
+	}
 
-    public void onLivingUpdate()
-    {
-        super.onLivingUpdate();
-        if (this.getBallTimer() > 0)
-        {
-            this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.0D);
-            this.setBallTimer(this.getBallTimer() - 1);
-        }
-        else
-        {
-            this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.25D);  	
-        }
-    	if (this.onGround == true && this.getBallTimer() > 98)
-    	{
-    		this.jump();
-            this.playSound("wildmobsmod:mob.armadillo.hurt", this.getSoundVolume(), this.getSoundPitch());
-    	}
-    }
+	protected float getSoundVolume()
+	{
+		return 0.4F;
+	}
 
-	public EntityArmadillo createChild(EntityAgeable p_90011_1_)
+	public boolean isBreedingItem(ItemStack stack)
+	{
+		if(!WildMobsMod.BUTTERFLY_CONFIG.isEnabled() && !WildMobsMod.DRAGONFLY_CONFIG.isEnabled())
+		{
+			return stack != null && stack.getItem() instanceof ItemSeeds;
+		}
+		return stack != null && (stack.getItem() == WildMobsModItems.butterfly || stack.getItem() == WildMobsModItems.dragonfly);
+	}
+
+	public boolean interact(EntityPlayer player)
+	{
+		ItemStack itemstack = player.inventory.getCurrentItem();
+
+		if(super.interact(player))
+		{
+			return true;
+		}
+		else if(!this.worldObj.isRemote)
+		{
+			if(itemstack != null && itemstack.getItem() == WildMobsModItems.armadilloSpawnEgg)
+			{
+				EntityArmadillo entityageable = this.createChild(this);
+				entityageable.setGrowingAge(-24000);
+				entityageable.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
+				worldObj.spawnEntityInWorld(entityageable);
+
+				if(itemstack.hasDisplayName())
+				{
+					entityageable.setCustomNameTag(itemstack.getDisplayName());
+				}
+
+				if(!player.capabilities.isCreativeMode)
+				{
+					--itemstack.stackSize;
+
+					if(itemstack.stackSize <= 0)
+					{
+						player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack) null);
+					}
+				}
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	protected void dropFewItems(boolean playerkill, int looting)
+	{
+		int j = this.rand.nextInt(3) + 2 + this.rand.nextInt(1 + looting);
+
+		for(int k = 0; k < j; ++k)
+		{
+			this.dropItem(WildMobsModItems.armadilloShell, 1);
+		}
+	}
+
+	public void onLivingUpdate()
+	{
+		super.onLivingUpdate();
+		if(this.getBallTimer() > 0)
+		{
+			this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.0D);
+			this.setBallTimer(this.getBallTimer() - 1);
+		}
+		else
+		{
+			this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.25D);
+		}
+		if(this.onGround == true && this.getBallTimer() > 98)
+		{
+			this.jump();
+			this.playSound("wildmobsmod:entity.armadillo.hurt", this.getSoundVolume(), this.getSoundPitch());
+		}
+	}
+
+	public EntityArmadillo createChild(EntityAgeable entity)
 	{
 		return new EntityArmadillo(this.worldObj);
 	}

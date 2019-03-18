@@ -1,48 +1,25 @@
 package com.wildmobsmod.misc;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import com.wildmobsmod.items.WildMobsModItems;
-import com.wildmobsmod.main.MainRegistry;
+import com.wildmobsmod.main.WildMobsMod;
 
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.monster.EntityCaveSpider;
-import net.minecraft.entity.passive.EntitySquid;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.passive.EntitySquid;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 
-public class MobDropsHandler {
-    
-    protected Random rand;
-    
+public class MobDropsHandler
+{
 	@SubscribeEvent
-    public void onMobDrops(LivingDropsEvent event)
+	public void onSquidDrops(LivingDropsEvent event)
 	{
-        this.rand = new Random();
-        
-		if (event.entity instanceof EntitySquid && MainRegistry.enableCalamari == true)
+		if(event.entity instanceof EntitySquid)
 		{
-			ItemStack stack = new ItemStack(WildMobsModItems.rawCalamari);
-			ItemStack stack1 = new ItemStack(WildMobsModItems.cookedCalamari);
-			
-	    	int j = this.rand.nextInt(2) + 1 + this.rand.nextInt(1);
-
-	    	for (int k = 0; k < j; ++k)
-	    	{
-				if (event.entity.isBurning())
-				{
-					EntityItem drop = new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, stack1);
-					event.drops.add(drop);
-				}
-				else
-				{
-					EntityItem drop = new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, stack);
-					event.drops.add(drop);
-				}
-	    	}
+			World world = event.entity.worldObj;
+			int j = world.rand.nextInt(2) + 1 + world.rand.nextInt(1);
+			event.drops.add(new EntityItem(world, event.entity.posX, event.entity.posY, event.entity.posZ, new ItemStack(event.entity.isBurning() ? WildMobsModItems.rawCalamari : WildMobsModItems.cookedCalamari, 1, j)));
 		}
 	}
 }

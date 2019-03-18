@@ -2,6 +2,12 @@ package com.wildmobsmod.entity.passive.bison;
 
 import java.util.List;
 
+import com.wildmobsmod.entity.ai.EntityAIAdultAttackOnCollide;
+import com.wildmobsmod.entity.ai.EntityAIBabyPanic;
+import com.wildmobsmod.items.WildMobsModItems;
+import com.wildmobsmod.main.WildMobsMod;
+
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.IEntityLivingData;
@@ -14,7 +20,6 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITempt;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -23,22 +28,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-import com.jcraft.jorbis.Block;
-import com.wildmobsmod.entity.ai.EntityAIAdultAttackOnCollide;
-import com.wildmobsmod.entity.ai.EntityAIBabyPanic;
-import com.wildmobsmod.items.WildMobsModItems;
-import com.wildmobsmod.main.MainRegistry;
-
 public class EntityBison extends EntityAnimal
 {
 	//
-	// Bison now protect their babies and babies also spawn naturally in packs alongside adults.
+	// Bison now protect their babies and babies also spawn naturally in packs
+	// alongside adults.
 	//
-	
+
 	private int angerTimer;
-	
-	public EntityBison(World par1World) {
-		super(par1World);
+
+	public EntityBison(World world)
+	{
+		super(world);
 		this.setSize(1.4F, 1.8F);
 		this.getNavigator().setAvoidsWater(true);
 		this.tasks.addTask(0, new EntityAISwimming(this));
@@ -52,197 +53,196 @@ public class EntityBison extends EntityAnimal
 		this.tasks.addTask(7, new EntityAILookIdle(this));
 		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
 	}
-	
+
 	public int getMaxSpawnedInChunk()
 	{
-		return 6;
+		return WildMobsMod.BISON_CONFIG.getMaxPackSize();
 	}
-	
+
 	public boolean isAIEnabled()
 	{
 		return true;
 	}
-	
-    public boolean allowLeashing()
-    {
-        return this.getGrowingAge() < 0;
-    }
 
-	protected void applyEntityAttributes(){
+	public boolean allowLeashing()
+	{
+		return this.getGrowingAge() < 0;
+	}
+
+	protected void applyEntityAttributes()
+	{
 		super.applyEntityAttributes();
 		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(18.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.20000000298023224D);
-        this.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.4D);
+		this.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.4D);
 	}
 
 	public float getEyeHeight()
 	{
 		return this.height * 1.0F;
 	}
-	
+
 	public void updateAITick()
 	{
-		if (this.getMoveHelper().isUpdating())
+		if(this.getMoveHelper().isUpdating())
 		{
 			double d0 = this.getMoveHelper().getSpeed();
 
-			if (d0 >= 1.7D)
+			if(d0 >= 1.7D)
 			{
 				this.setSprinting(true);
 				this.angerTimer = 5;
 			}
 			else
 			{
-				if (this.angerTimer != 0)
+				if(this.angerTimer != 0)
 				{
-					this.angerTimer --;	
+					this.angerTimer--;
 					this.setSprinting(true);
 				}
 				else
 				{
-					this.setSprinting(false);			
+					this.setSprinting(false);
 				}
 			}
 		}
 		else
 		{
-			if (this.angerTimer != 0)
+			if(this.angerTimer != 0)
 			{
-				this.angerTimer --;	
+				this.angerTimer--;
 				this.setSprinting(true);
 			}
 			else
 			{
-				this.setSprinting(false);			
+				this.setSprinting(false);
 			}
 		}
 	}
-	
-	public boolean attackEntityAsMob(Entity p_70652_1_)
+
+	public boolean attackEntityAsMob(Entity target)
 	{
-		return p_70652_1_.attackEntityFrom(DamageSource.causeMobDamage(this), 5.0F);
+		return target.attackEntityFrom(DamageSource.causeMobDamage(this), 5.0F);
 	}
-	
+
 	protected String getLivingSound()
 	{
-		return "wildmobsmod:mob.bison.say";
+		return "wildmobsmod:entity.bison.say";
 	}
-	
+
 	protected String getHurtSound()
 	{
-		return "wildmobsmod:mob.bison.hurt";
+		return "wildmobsmod:entity.bison.hurt";
 	}
-	
+
 	protected String getDeathSound()
 	{
-		return "wildmobsmod:mob.bison.hurt";
+		return "wildmobsmod:entity.bison.hurt";
 	}
 	
-	protected void func_145780_a(int p_145780_1_, int p_145780_2_, int p_145780_3_, Block p_145780_4_)
+	/**
+	 * Movement sound
+	 */
+	@Override
+	protected void func_145780_a(int x, int y, int z, Block stepBlock)
 	{
 		this.playSound("mob.cow.step", 0.15F, 1.0F);
 	}
-	
+
 	protected float getSoundVolume()
 	{
 		return 0.4F;
 	}
-	
+
 	protected Item getDropItem()
 	{
 		return WildMobsModItems.thickBone;
 	}
-	
-    public boolean interact(EntityPlayer p_70085_1_)
-    {
-    	ItemStack itemstack = p_70085_1_.inventory.getCurrentItem();
 
-    	if (super.interact(p_70085_1_))
-    	{
-    		return true;
-    	}
-    	else if (!this.worldObj.isRemote)
-    	{
-    		if (itemstack != null && itemstack.getItem() == WildMobsModItems.bisonSpawnEgg)
-    		{
-            	EntityBison entityageable = this.createChild(this);
-                entityageable.setGrowingAge(-24000);
-            	entityageable.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
-            	worldObj.spawnEntityInWorld(entityageable);
-
-                if (itemstack.hasDisplayName())
-                {
-                    entityageable.setCustomNameTag(itemstack.getDisplayName());
-                }
-
-                if (!p_70085_1_.capabilities.isCreativeMode)
-                {
-                    --itemstack.stackSize;
-
-                    if (itemstack.stackSize <= 0)
-                    {
-                        p_70085_1_.inventory.setInventorySlotContents(p_70085_1_.inventory.currentItem, (ItemStack)null);
-                    }
-                }
-    			return true;
-    		}
-    		else if (itemstack != null && itemstack.getItem() == Items.lead && this.getGrowingAge() >= 0)
-    		{
-                this.playSound(this.getHurtSound(), this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
-                this.playAngryEffect();
-    			return true;
-    		}
-    		else
-    		{
-    			return false;
-    		}
-    	}
-    	else
-    	{
-    		return false;
-    	}
-    }
-
-    protected void playAngryEffect()
-    {
-        for (int i = 0; i < 7; ++i)
-        {
-            double d0 = this.rand.nextGaussian() * 0.02D;
-            double d1 = this.rand.nextGaussian() * 0.02D;
-            double d2 = this.rand.nextGaussian() * 0.02D;
-            this.worldObj.spawnParticle("smoke", this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d0, d1, d2);
-        }
-    }
-    
-	protected void dropFewItems(boolean f1, int f2)
+	public boolean interact(EntityPlayer player)
 	{
-		int j = this.rand.nextInt(3) + this.rand.nextInt(1 + f2);
+		ItemStack itemstack = player.inventory.getCurrentItem();
+
+		if(super.interact(player))
+		{
+			return true;
+		}
+		else if(!this.worldObj.isRemote)
+		{
+			if(itemstack != null && itemstack.getItem() == WildMobsModItems.bisonSpawnEgg)
+			{
+				EntityBison entityageable = this.createChild(this);
+				entityageable.setGrowingAge(-24000);
+				entityageable.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
+				worldObj.spawnEntityInWorld(entityageable);
+
+				if(itemstack.hasDisplayName())
+				{
+					entityageable.setCustomNameTag(itemstack.getDisplayName());
+				}
+
+				if(!player.capabilities.isCreativeMode)
+				{
+					--itemstack.stackSize;
+
+					if(itemstack.stackSize <= 0)
+					{
+						player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack) null);
+					}
+				}
+				return true;
+			}
+			else if(itemstack != null && itemstack.getItem() == Items.lead && this.getGrowingAge() >= 0)
+			{
+				this.playSound(this.getHurtSound(), this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+				this.playAngryEffect();
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	protected void playAngryEffect()
+	{
+		for(int i = 0; i < 7; ++i)
+		{
+			double d0 = this.rand.nextGaussian() * 0.02D;
+			double d1 = this.rand.nextGaussian() * 0.02D;
+			double d2 = this.rand.nextGaussian() * 0.02D;
+			this.worldObj.spawnParticle("smoke", this.posX + (double) (this.rand.nextFloat() * this.width * 2.0F) - (double) this.width, this.posY + 0.5D + (double) (this.rand.nextFloat() * this.height),
+					this.posZ + (double) (this.rand.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2);
+		}
+	}
+
+	protected void dropFewItems(boolean playerkill, int looting)
+	{
+		int j = this.rand.nextInt(3) + this.rand.nextInt(1 + looting);
 		int k;
 
-		for (k = 0; k < j; ++k)
+		for(k = 0; k < j; ++k)
 		{
 			this.dropItem(WildMobsModItems.thickBone, 1);
 		}
 
-		j = this.rand.nextInt(4) + this.rand.nextInt(1 + f2);
+		j = this.rand.nextInt(4) + this.rand.nextInt(1 + looting);
 
-		for (k = 0; k < j; ++k)
+		for(k = 0; k < j; ++k)
 		{
-        	if (MainRegistry.enableBisonLeather)
-        	{
-        		this.dropItem(WildMobsModItems.bisonLeather, 1);
-        	}
-        	else
-        	{
-        		this.dropItem(Items.leather, 1);
-        	}
+			this.dropItem(WildMobsModItems.bisonLeather, 1);
 		}
 
-		j = this.rand.nextInt(4) + 1 + this.rand.nextInt(1 + f2);
+		j = this.rand.nextInt(4) + 1 + this.rand.nextInt(1 + looting);
 
-		for (k = 0; k < j; ++k)
+		for(k = 0; k < j; ++k)
 		{
-			if (this.isBurning())
+			if(this.isBurning())
 			{
 				this.dropItem(WildMobsModItems.cookedBisonMeat, 1);
 			}
@@ -255,69 +255,69 @@ public class EntityBison extends EntityAnimal
 
 	public IEntityLivingData onSpawnWithEgg(IEntityLivingData entity)
 	{
-		Object p_110161_1_1 = super.onSpawnWithEgg(entity);
-		
-        boolean b = false;
+		IEntityLivingData data = super.onSpawnWithEgg(entity);
 
-        if (p_110161_1_1 instanceof EntityBison.GroupData)
-        {
-        	b = true;
-        }
-        else
-        {
-        	b = false;
-        	p_110161_1_1 = new EntityBison.GroupData();
-        }
+		boolean b = false;
 
-        if (b == true)
-        {
-        	if (this.worldObj.rand.nextInt(3) == 0)
-        	{
-        		this.setGrowingAge(-24000 + this.worldObj.rand.nextInt(12000));
-        	}
-        }
-        
-        return (IEntityLivingData)p_110161_1_1;
+		if(data instanceof EntityBison.GroupData)
+		{
+			b = true;
+		}
+		else
+		{
+			b = false;
+			data = new EntityBison.GroupData();
+		}
+
+		if(b == true)
+		{
+			if(this.worldObj.rand.nextInt(3) == 0)
+			{
+				this.setGrowingAge(-24000 + this.worldObj.rand.nextInt(12000));
+			}
+		}
+
+		return (IEntityLivingData) data;
 	}
-	
-    public boolean attackEntityFrom(DamageSource p_70097_1_, float p_70097_2_)
-    {
-        if (this.isEntityInvulnerable())
-        {
-            return false;
-        }
-        else
-        {
-            Entity entity = p_70097_1_.getEntity();
 
-            if (entity instanceof EntityPlayer && this.getGrowingAge() < 0)
-            {
-                List list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(6.0D, 6.0D, 6.0D));
+	public boolean attackEntityFrom(DamageSource source, float amount)
+	{
+		if(this.isEntityInvulnerable())
+		{
+			return false;
+		}
+		else
+		{
+			Entity entity = source.getEntity();
 
-                for (int i = 0; i < list.size(); ++i)
-                {
-                    Entity entity1 = (Entity)list.get(i);
+			if(entity instanceof EntityPlayer && this.getGrowingAge() < 0)
+			{
+				List list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(6.0D, 6.0D, 6.0D));
 
-                    if (entity1 instanceof EntityBison && ((EntityBison)entity1).getAttackTarget() == null && ((EntityBison)entity1).getGrowingAge() >= 0)
-                    {
-                        EntityBison entitybison = (EntityBison)entity1;
-                        entitybison.entityToAttack = entity;
-                    }
-                }
-            }
-            
-            return super.attackEntityFrom(p_70097_1_, p_70097_2_);
-        }
-    }
-    
-    public static class GroupData implements IEntityLivingData
-    {
-        public GroupData()
-        {
-        }
-    }
-        
-	public EntityBison createChild(EntityAgeable p_90011_1_)
+				for(int i = 0; i < list.size(); ++i)
+				{
+					Entity entity1 = (Entity) list.get(i);
+
+					if(entity1 instanceof EntityBison && ((EntityBison) entity1).getAttackTarget() == null && ((EntityBison) entity1).getGrowingAge() >= 0)
+					{
+						EntityBison entitybison = (EntityBison) entity1;
+						entitybison.entityToAttack = entity;
+					}
+				}
+			}
+
+			return super.attackEntityFrom(source, amount);
+		}
+	}
+
+	public static class GroupData implements IEntityLivingData
+	{
+		public GroupData()
+		{
+		}
+	}
+
+	public EntityBison createChild(EntityAgeable entity)
 	{
 		return new EntityBison(this.worldObj);
 	}

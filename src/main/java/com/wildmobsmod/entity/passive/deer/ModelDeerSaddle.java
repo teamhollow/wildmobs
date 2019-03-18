@@ -1,15 +1,15 @@
 package com.wildmobsmod.entity.passive.deer;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 
-import org.lwjgl.opengl.GL11;
-
 public class ModelDeerSaddle extends ModelBase
 {
-	//fields
+	// fields
 	ModelRenderer body;
 	ModelRenderer leg1;
 	ModelRenderer leg2;
@@ -26,21 +26,18 @@ public class ModelDeerSaddle extends ModelBase
 	ModelRenderer elkantler1;
 	ModelRenderer elkantler2;
 
-	//This is really useful for converting the source from a Techne model export
-	//which will have absolute rotation points that need to be converted before
-	//creating the addChild() relationship
-	protected void convertToChild(ModelRenderer parParent, ModelRenderer parChild)
+	protected static void convertToChild(ModelRenderer parent, ModelRenderer child)
 	{
 		// move child rotation point to be relative to parent
-		parChild.rotationPointX -= parParent.rotationPointX;
-		parChild.rotationPointY -= parParent.rotationPointY;
-		parChild.rotationPointZ -= parParent.rotationPointZ;
+		child.rotationPointX -= parent.rotationPointX;
+		child.rotationPointY -= parent.rotationPointY;
+		child.rotationPointZ -= parent.rotationPointZ;
 		// make rotations relative to parent
-		parChild.rotateAngleX -= parParent.rotateAngleX;
-		parChild.rotateAngleY -= parParent.rotateAngleY;
-		parChild.rotateAngleZ -= parParent.rotateAngleZ;
+		child.rotateAngleX -= parent.rotateAngleX;
+		child.rotateAngleY -= parent.rotateAngleY;
+		child.rotateAngleZ -= parent.rotateAngleZ;
 		// create relationship
-		parParent.addChild(parChild);
+		parent.addChild(child);
 	}
 
 	public ModelDeerSaddle()
@@ -163,13 +160,13 @@ public class ModelDeerSaddle extends ModelBase
 	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
 	{
 		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-		float f6 = (180F / (float)Math.PI);
-		this.head.rotateAngleX = f4 / (180F / (float)Math.PI);
-		this.head.rotateAngleY = f3 / (360F / (float)Math.PI);
+		float f6 = (180F / (float) Math.PI);
+		this.head.rotateAngleX = f4 / (180F / (float) Math.PI);
+		this.head.rotateAngleY = f3 / (360F / (float) Math.PI);
 		this.head.rotateAngleX += 0.1F;
 		this.leg1.rotateAngleX = MathHelper.cos(f * 0.666F) * 1.4F * f1;
-		this.leg2.rotateAngleX = MathHelper.cos(f * 0.666F + (float)Math.PI) * 1.4F * f1;
-		this.leg3.rotateAngleX = MathHelper.cos(f * 0.666F + (float)Math.PI) * 1.4F * f1;
+		this.leg2.rotateAngleX = MathHelper.cos(f * 0.666F + (float) Math.PI) * 1.4F * f1;
+		this.leg3.rotateAngleX = MathHelper.cos(f * 0.666F + (float) Math.PI) * 1.4F * f1;
 		this.leg4.rotateAngleX = MathHelper.cos(f * 0.666F) * 1.4F * f1;
 	}
 }
