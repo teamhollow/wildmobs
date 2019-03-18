@@ -1,0 +1,169 @@
+﻿item.venison.name=Rohes Wildfleisch
+item.cooked_venison.name=Gebratenes Wildfleisch
+item.fur.name=Fell
+item.bison_leather.name=Bisonleder
+item.cougar_hide.name=Puma Balg
+item.fur_helmet.name=Fellmütze
+item.fur_chestplate.name=Felljacke
+item.fur_leggings.name=Fellhose
+item.fur_boots.name=Fellstiefel
+item.infected_flesh.name=Infiziertes Fleisch
+item.bison_meat.name=Rohes Bisonfleisch
+item.cooked_bison_meat.name=Bisonsteak
+item.thick_bone.name=Dicker Knochen
+item.mouse.name=Rohe Maus
+item.cooked_mouse.name=Gebratene Maus
+item.bison_leather_helmet.name=Bisonleder Stirnband
+item.bison_leather_chestplate.name=Bisonleder Jacke
+item.bison_leather_leggings.name=Bisonlederhose
+item.bison_leather_boots.name=Bisonlederstiefel
+item.bug_net.name=Kescher
+item.magic_book.name=Magisches Buch
+item.chevon.name=Rohes Ziegenfleisch
+item.cooked_chevon.name=Gebratenes Ziegenfleisch
+item.calamari.name=Roher Calamari
+item.cooked_calamari.name=Gebratener Calamari
+item.armadillo_shell.name=Gürteltierpanzer
+item.slime_drop.name=Schleimtropfen
+item.magma_cream_drop.name=Magmatropfen
+item.magma_plant_seed.name=Magmablütensamen
+item.goose.name=Rohe Gans
+item.cooked_goose.name=Gebratene Gans
+item.scissors.name=Schere
+item.spell_book.name=§eZauberbuch
+item.spell_book_empty.name=Zauberbuch
+
+item.magic_wand.name=Zauberstab
+
+spell.empty.name=Leer
+spell.explosion.name=Explosion
+spell.puncture.name=Stechen
+spell.attack.name=Überfallender Fluch
+spell.drag.name=Wuchtiger Zug
+
+item.magic_wand.conflictingBooks=Du kannst nur ein Primär Zauberbuch zur selben Zeit verwenden
+item.magic_wand.noBook=Du besitzt kein Primär Zauberbuch in deinem Inventar
+
+spell.type.primary.name=Type: Primär
+spell.type.enhance.name=Type: Verstärkung
+
+item.butterfly.beige.name=Beiger Schmetterling
+item.butterfly.blue.name=Blauer Schmetterling
+item.butterfly.glass.name=Glasflügel Schmetterling
+item.butterfly.lime.name=Hellgrüner Schmetterling
+item.butterfly.orange.name=Oranger Schmetterling
+item.butterfly.purple.name=Violetter Schmetterling
+item.butterfly.red.name=Roter Schmetterling
+item.butterfly.white.name=Schwarz-weißer Schmetterling
+item.butterfly.yellow.name=Gelber Schmetterling
+item.butterfly.cyan.name=Türkiser Schmetterling
+item.butterfly.brown.name=Brauner Schmetterling
+item.butterfly.black.name=Schwarzer Schmetterling
+item.butterfly.green.name=Grüner Schmetterling
+item.butterfly.gray.name=Grauer Schmetterling
+
+item.dragonfly.blue.name=Blaue Libelle
+item.dragonfly.cyan.name=Türkise Libelle
+item.dragonfly.green.name=Grüne Libelle
+item.dragonfly.orange.name=Orange Libelle
+item.dragonfly.red.name=Rote Libelle
+item.dragonfly.yellow.name=Gelbe Libelle
+
+item.jellyfish_bucket.orange.name=Orange Qualle im Eimer
+item.jellyfish_bucket.blue.name=Blaue Qualle im Eimer
+item.jellyfish_bucket.pink.name=Rosa Qualle im Eimer
+item.jellyfish_bucket.red.name=Rote Qualle im Eimer
+item.jellyfish_bucket.yellow.name=Gelbe Qualle im Eimer
+item.jellyfish_bucket.white.name=Weisse Qualle im Eimer
+item.jellyfish_bucket.nether.name=Nether Meduse im Eimer
+
+tile.bison_block.name=Bisonlederblock
+tile.leather_block.name=Lederblock
+tile.fur_block.name=Fellblock
+tile.fur_carpet.name=Fellteppich
+tile.leather_carpet.name=Lederteppich
+tile.bison_carpet.name=Bisonlederteppich
+tile.armadillo_shell_block.name=Gürteltierpanzerblock
+
+tile.bladder_block_damaged_0.name=Blasenblock
+tile.bladder_block_damaged_1.name=Leicht beschädigter Blasenblock
+tile.bladder_block_damaged_2.name=Schwer beschädigter Blasenblock
+
+tile.woolCarpet.name=Teppich
+tile.woolCarpet.black.name=Schwarzer Teppich
+tile.woolCarpet.red.name=Roter Teppich
+tile.woolCarpet.green.name=Grüner Teppich
+tile.woolCarpet.brown.name=Brauner Teppich
+tile.woolCarpet.blue.name=Blauer Teppich
+tile.woolCarpet.purple.name=Violetter Teppich
+tile.woolCarpet.cyan.name=Türkiser Teppich
+tile.woolCarpet.silver.name=Hellgrauer Teppich
+tile.woolCarpet.gray.name=Grauer Teppich
+tile.woolCarpet.pink.name=Rosa Teppich
+tile.woolCarpet.lime.name=Hellgrüner Teppich
+tile.woolCarpet.yellow.name=Gelber Teppich
+tile.woolCarpet.lightBlue.name=Hellblauer Teppich
+tile.woolCarpet.magenta.name=Magenta Teppich
+tile.woolCarpet.orange.name=Oranger Teppich
+tile.woolCarpet.white.name=Weißer Teppich
+
+entity.wildmobsmod.Deer.name=Hirsch
+entity.wildmobsmod.Reindeer.name=Rentier
+entity.wildmobsmod.Elk.name=Elch
+entity.wildmobsmod.Fox.name=Fuchs
+entity.wildmobsmod.ArcticFox.name=Polarfuchs
+entity.wildmobsmod.DesertFox.name=Wüstenfuchs
+entity.wildmobsmod.Cougar.name=Puma
+entity.wildmobsmod.Zomgus.name=Zomgus
+entity.wildmobsmod.Bison.name=Bison
+entity.wildmobsmod.Wizard.name=Magier
+entity.wildmobsmod.Mouse.name=Maus
+entity.wildmobsmod.Butterfly.name=Schmetterling
+entity.wildmobsmod.Tarantula.name=Tarantel
+entity.wildmobsmod.Dreath.name=Draugr
+entity.wildmobsmod.Mired.name=Versunkener Schatten
+entity.wildmobsmod.Goat.name=Ziege
+entity.wildmobsmod.DireWolf.name=Schreckenswolf
+entity.wildmobsmod.MagmaPlant.name=Magmablüte
+entity.wildmobsmod.Dragonfly.name=Libelle
+entity.wildmobsmod.Armadillo.name=Gürteltier
+entity.wildmobsmod.Jellyfish.name=Qualle
+entity.wildmobsmod.NetherJellyfish.name=Nether Meduse
+entity.wildmobsmod.SkeletonWolf.name=Skelettwolf
+entity.wildmobsmod.Goose.name=Gans
+
+item.spawn_egg_deer.name=Erschaffe Hirsch
+item.spawn_egg_reindeer.name=Erschaffe Rentier
+item.spawn_egg_elk.name=Erschaffe Elch
+item.spawn_egg_fox.name=Erschaffe Fuchs
+item.spawn_egg_arctic_fox.name=Erschaffe Polarfuchs
+item.spawn_egg_desert_fox.name=Erschaffe Wüstenfuchs
+item.spawn_egg_cougar.name=Erschaffe Puma
+item.spawn_egg_zomgus.name=Erschaffe Zomgus
+item.spawn_egg_bison.name=Erschaffe Bison
+item.spawn_egg_wizard.name=Erschaffe Magier
+item.spawn_egg_mouse.name=Erschaffe Maus
+item.spawn_egg_butterfly.name=Erschaffe Schmetterling
+item.spawn_egg_tarantula.name=Erschaffe Schmetterling
+item.spawn_egg_dreath.name=Erschaffe Draugr
+item.spawn_egg_mired.name=Erschaffe Versunkener Schatten
+item.spawn_egg_goat.name=Erschaffe Ziege
+item.spawn_egg_dire_wolf.name=Erschaffe Schreckenswolf
+item.spawn_egg_magma_plant.name=Erschaffe Magmablüte
+item.spawn_egg_dragonfly.name=Erschaffe Libelle
+item.spawn_egg_armadillo.name=Erschaffe Gürteltier
+item.spawn_egg_jellyfish.name=Erschaffe Qualle
+item.spawn_egg_nether_jellyfish.name=Erschaffe Nether Meduse
+item.spawn_egg_skeleton_wolf.name=Erschaffe Skelettwolf
+item.spawn_egg_goose.name=Erschaffe Gans
+
+potion.spore_infection=Pilzinfektion
+
+death.attack.infected=%1$s starb durch Pilzbefall.
+death.attack.infected.player=%1$s starb während des Kampfes mit %2$s durch Pilzbefall.
+
+achievement.tameDireWolf=Zähmung der Bestie
+achievement.tameDireWolf.desc=Zähme einen Schreckenswolf mit dicken Knochen
+
+achievement.killWizard=Magierkampf
+achievement.killWizard.desc=Besiege einen Magier und erhalte seine Waffe

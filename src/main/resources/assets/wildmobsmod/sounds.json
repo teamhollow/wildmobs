@@ -1,0 +1,352 @@
+{
+    "item.bucket.fill_fish":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "item/bucket/fill_fish1",
+            "item/bucket/fill_fish2",
+            "item/bucket/fill_fish3"
+        ]
+    },
+    "entity.armadillo.hurt":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/armadillo/hurt1",
+            "entity/armadillo/hurt2",
+            "entity/armadillo/hurt3"
+        ]
+    },
+    "entity.bison.hurt":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/bison/hurt1",
+            "entity/bison/hurt2",
+            "entity/bison/hurt3"
+        ]
+    },
+    "entity.bison.say":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/bison/say1",
+            "entity/bison/say2",
+            "entity/bison/say3",
+            "entity/bison/say4"
+        ]
+    },
+    "entity.cheetah.angry":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/cheetah/angry1",
+            "entity/cheetah/angry2",
+            "entity/cheetah/angry3",
+            "entity/cheetah/angry4"
+        ]
+    },
+    "entity.cougar.angry":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/cougar/angry1",
+            "entity/cougar/angry2",
+            "entity/cougar/angry3"
+        ]
+    },
+    "entity.cougar.hurt":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/cougar/hurt1",
+            "entity/cougar/hurt2",
+            "entity/cougar/hurt3"
+        ]
+    },
+    "entity.deer.hurt":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/deer/hurt1",
+            "entity/deer/hurt2",
+            "entity/deer/hurt3"
+        ]
+    },
+    "entity.dragonfly.idle":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/dragonfly/idle1",
+            "entity/dragonfly/idle2",
+            "entity/dragonfly/idle3",
+            "entity/dragonfly/idle4"
+        ]
+    },
+    "mob.dreath.death":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/dreath/death"
+        ]
+    },
+    "mob.dreath.hurt":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/dreath/hurt1",
+            "entity/dreath/hurt2",
+            "entity/dreath/hurt3",
+            "entity/dreath/hurt4"
+        ]
+    },
+    "mob.dreath.say":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/dreath/say1",
+            "entity/dreath/say2",
+            "entity/dreath/say3"
+        ]
+    },
+    "mob.dreath.step":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/dreath/step1",
+            "entity/dreath/step2",
+            "entity/dreath/step3",
+            "entity/dreath/step4"
+        ]
+    },
+    "entity.goat.say":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/goat/say1",
+            "entity/goat/say2",
+            "entity/goat/say3",
+            "entity/goat/say4"
+        ]
+    },
+    "entity.goose.flying":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/goose/flying1",
+            "entity/goose/flying2"
+        ]
+    },
+    "entity.goose.hurt":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/goose/hurt1",
+            "entity/goose/hurt2",
+            "entity/goose/hurt3"
+        ]
+    },
+    "entity.goose.say":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/goose/say1",
+            "entity/goose/say2",
+            "entity/goose/say3",
+            "entity/goose/say4"
+        ]
+    },
+    "entity.hyena.angry":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/hyena/angry"
+        ]
+    },
+    "entity.hyena.hurt":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/hyena/hurt1",
+            "entity/hyena/hurt2"
+        ]
+    },
+    "entity.hyena.idle":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/hyena/idle"
+        ]
+    },
+    "entity.jellyfish.hurt":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/jellyfish/hurt1",
+            "entity/jellyfish/hurt2",
+            "entity/jellyfish/hurt3",
+            "entity/jellyfish/hurt4"
+        ]
+    },
+    "mob.magmaplant.hurt":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/magmaplant/hurt1",
+            "entity/magmaplant/hurt2",
+            "entity/magmaplant/hurt3"
+        ]
+    },
+    "entity.mired.say":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/mired/say1",
+            "entity/mired/say2",
+            "entity/mired/say3",
+            "entity/mired/say4"
+        ]
+    },
+    "entity.mouse.death":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/mouse/death"
+        ]
+    },
+    "entity.mouse.hurt":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/mouse/hurt1",
+            "entity/mouse/hurt2",
+            "entity/mouse/hurt3",
+            "entity/mouse/hurt4"
+        ]
+    },
+    "entity.mouse.idle":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/mouse/idle1",
+            "entity/mouse/idle2",
+            "entity/mouse/idle3",
+            "entity/mouse/idle4"
+        ]
+    },
+    "mob.seascorpion.hurtland":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/seascorpion/hurtland1",
+            "entity/seascorpion/hurtland2",
+            "entity/seascorpion/hurtland3",
+            "entity/seascorpion/hurtland4"
+        ]
+    },
+    "mob.seascorpion.hurtwater":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/seascorpion/hurtwater1",
+            "entity/seascorpion/hurtwater2",
+            "entity/seascorpion/hurtwater3",
+            "entity/seascorpion/hurtwater4"
+        ]
+    },
+    "mob.seascorpion.saywater":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/seascorpion/saywater1",
+            "entity/seascorpion/saywater2",
+            "entity/seascorpion/saywater3",
+            "entity/seascorpion/saywater4"
+        ]
+    },
+    "mob.wizard.hurt":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/wizard/hurt1",
+            "entity/wizard/hurt2",
+            "entity/wizard/hurt3"
+        ]
+    },
+    "mob.wizard.say":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/wizard/say1",
+            "entity/wizard/say2",
+            "entity/wizard/say3",
+            "entity/wizard/say4"
+        ]
+    },
+    "mob.wizard.teleport":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "entity/wizard/teleport"
+        ]
+    },
+    "random.spell_drag_impact":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "random/spell/spell_drag_impact1",
+            "random/spell/spell_drag_impact2"
+        ]
+    },
+    "random.spell_fail":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "random/spell/spell_fail"
+        ]
+    },
+    "random.spell":
+    {
+        "category": "neutral",
+        "sounds":
+        [
+            "random/spell/spell1",
+            "random/spell/spell2",
+            "random/spell/spell3"
+        ]
+    }
+}
