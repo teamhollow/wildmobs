@@ -51,17 +51,17 @@ public class EntityHyena extends EntityLargePredator
 
 	protected String getLivingSound()
 	{
-		return this.getAttackTarget() != null ? "entity.hyena.angry" : "entity.hyena.idle";
+		return this.getAttackTarget() != null ? "wildmobsmod:entity.hyena.angry" : "wildmobsmod:entity.hyena.idle";
 	}
 
 	protected String getHurtSound()
 	{
-		return "entity.hyena.hurt";
+		return "wildmobsmod:entity.hyena.hurt";
 	}
 
 	protected String getDeathSound()
 	{
-		return "entity.hyena.hurt";
+		return "wildmobsmod:entity.hyena.hurt";
 	}
 	
 	@Override
