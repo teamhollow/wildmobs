@@ -45,7 +45,7 @@ import net.minecraftforge.common.config.Configuration;
 @Mod(modid = WildMobsMod.MODID, name = WildMobsMod.MODNAME, version = WildMobsMod.VERSION, guiFactory = "com.wildmobsmod.main.GUIFactory")
 public class WildMobsMod
 {
-	public static final String MODID = "wildmobsmod", MODNAME = "Wild Mobs", VERSION = "1.5.1";
+	public static final String MODID = "wildmobsmod", MODNAME = "Wild Mobs", VERSION = "1.5.2";
 	
 	@SidedProxy(clientSide = "com.wildmobsmod.main.ClientProxy", serverSide = "com.wildmobsmod.main.ServerProxy")
 	public static IProxy proxy;

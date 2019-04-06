@@ -99,7 +99,7 @@ public class EntityConfig
 	protected static WeightedRandomSelector<ItemStack> buildWeightedRandomSelectorFromStackList(String... stackList) {
 		final int size = stackList.length;
 		if(size < 1) {
-			return new WeightedRandomSelector<>(new ItemStack[]{null}, new double[] {1.0D});
+			return new WeightedRandomSelector<>(new ItemStack[]{null}, new double[]{1.0D});
 		}
 		final ItemStack[] stacks = new ItemStack[size];
 		final int[] weights = new int[size];

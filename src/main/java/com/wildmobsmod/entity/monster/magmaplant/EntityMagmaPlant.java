@@ -72,7 +72,7 @@ public class EntityMagmaPlant extends EntityLiving implements IMob
 			this.setStage(b0);
 		}
 		this.setGrowingAge(nbt.getInteger("Age"));
-		nbt.setBoolean("IsWild", this.getIsWild());
+		this.setIsWild(nbt.getBoolean("IsWild"));
 	}
 
 	public void writeEntityToNBT(NBTTagCompound nbt)
@@ -80,7 +80,7 @@ public class EntityMagmaPlant extends EntityLiving implements IMob
 		super.writeEntityToNBT(nbt);
 		nbt.setByte("Stage", (byte) this.getStage());
 		nbt.setInteger("Age", this.getGrowingAge());
-		this.setIsWild(nbt.getBoolean("IsWild"));
+		nbt.setBoolean("IsWild", this.getIsWild());
 	}
 
 	public int getStage()
@@ -309,7 +309,7 @@ public class EntityMagmaPlant extends EntityLiving implements IMob
 				this.dropItem(WildMobsModItems.magmaPlantSeed, 1);
 			}
 		}
-		else
+		else if( this.rand.nextInt(4) != 0)
 		{
 			this.dropItem(WildMobsModItems.magmaPlantSeed, 1);
 		}
