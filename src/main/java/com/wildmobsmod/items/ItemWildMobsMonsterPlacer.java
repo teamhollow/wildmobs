@@ -97,56 +97,6 @@ public class ItemWildMobsMonsterPlacer extends ItemMonsterPlacer
 		return true;
 	}
 
-//	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
-//	{
-//		if(par2World.isRemote)
-//		{
-//			return par1ItemStack;
-//		}
-//		else
-//		{
-//			MovingObjectPosition movingobjectposition = getMovingObjectPositionFromPlayer(par2World, par3EntityPlayer, true);
-//
-//			if(movingobjectposition == null)
-//			{
-//				return par1ItemStack;
-//			}
-//			else
-//			{
-//				if(movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
-//				{
-//					int i = movingobjectposition.blockX;
-//					int j = movingobjectposition.blockY;
-//					int k = movingobjectposition.blockZ;
-//
-//					if(!par2World.canMineBlock(par3EntityPlayer, i, j, k)) { return par1ItemStack; }
-//
-//					if(!par3EntityPlayer.canPlayerEdit(i, j, k, movingobjectposition.sideHit, par1ItemStack)) { return par1ItemStack; }
-//
-//					if(par2World.getBlock(i, j, k) instanceof BlockLiquid)
-//					{
-//						Entity entity = spawnEntity(par2World, i, j, k);
-//
-//						if(entity != null)
-//						{
-//							if(entity instanceof EntityLivingBase && par1ItemStack.hasDisplayName())
-//							{
-//								((EntityLiving) entity).setCustomNameTag(par1ItemStack.getDisplayName());
-//							}
-//
-//							if(!par3EntityPlayer.capabilities.isCreativeMode)
-//							{
-//								--par1ItemStack.stackSize;
-//							}
-//						}
-//					}
-//				}
-//
-//				return par1ItemStack;
-//			}
-//		}
-//	}
-
 	/**
 	 * only call this on the server side!
 	 */

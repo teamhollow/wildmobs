@@ -94,9 +94,9 @@ public class EntityConfig
 	 * =<>=<>=<>=<>= CONFIG PARSING UTILITY METHODS =<>=<>=<>=<>=
 	 */
 	
-	protected static final String PATTERN_WEIGHTEDRANDOMSTACKLIST = "[Pattern: <modid>:<itemid>:<meta>, <amount>, <weight>]";
+	protected static final String PATTERN_WEIGHTEDRANDOMSTACKSELECTOR = "[Pattern: <modid>:<itemid>:<meta>, <amount>, <weight>]";
 
-	protected static WeightedRandomSelector<ItemStack> buildWeightedRandomSelectorFromStackList(String... stackList) {
+	protected static WeightedRandomSelector<ItemStack> buildWeightedRandomStackSelector(String... stackList) {
 		final int size = stackList.length;
 		if(size < 1) {
 			return new WeightedRandomSelector<>(new ItemStack[]{null}, new double[]{1.0D});

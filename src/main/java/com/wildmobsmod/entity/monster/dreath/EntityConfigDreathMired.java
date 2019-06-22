@@ -66,8 +66,8 @@ public class EntityConfigDreathMired extends EntityConfig
 		bottleDropChance = config.get(getMiredCategory(), "bottleDropChance", defaultBottleDropChance, "Chance (in percent) of a mired dropping a mired bottle.", 0.0D, 1.0D).getDouble();
 		enableMiredBottle = config.getBoolean("enableMiredBottle", getMiredCategory(), defaultEnableMiredBottle, "Allow MiredSummoners (and consequentially Mireds) to be spawned via Mired Bottles (which are dropped by Dreaths)? [Ignored if \"registerMiredEntities\" is false]");
 		miredDropCount = config.getInt("miredDropCount", getMiredCategory(), defaultMiredDropCount, 1, 20, "Amount of Loot a Mired Bottle is meant to drop.");
-		miredLoot = config.getStringList("miredLoot", getMiredCategory(), defaultMiredLoot, "Mired LootTable definition. " + PATTERN_WEIGHTEDRANDOMSTACKLIST);
-		miredLootTable = buildWeightedRandomSelectorFromStackList(miredLoot);
+		miredLoot = config.getStringList("miredLoot", getMiredCategory(), defaultMiredLoot, "Mired LootTable definition. " + PATTERN_WEIGHTEDRANDOMSTACKSELECTOR);
+		miredLootTable = buildWeightedRandomStackSelector(miredLoot);
 		guaranteeDropCount = config.getBoolean("guaranteeDropCount", getMiredCategory(), defaultGuaranteeDropCount, "If a MiredSummoners loot pool hasn't been exhausted during its lifetime, drop the leftovers on it's own death?");
 	}
 	

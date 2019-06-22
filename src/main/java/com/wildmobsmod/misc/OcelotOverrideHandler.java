@@ -14,12 +14,12 @@ public class OcelotOverrideHandler
 	@SubscribeEvent(priority=EventPriority.HIGHEST)
 	public void onOcelotSpawn(EntityJoinWorldEvent event)
 	{
-		if(event.entity.getClass() == EntityOcelot.class && WildMobsMod.checkIsEntityNew(event.entity) && Math.random() * 100 < WildMobsMod.OCELOT_CONFIG.getOverrideChance())
+		final Entity entity = event.entity;
+		if(entity.getClass() == EntityOcelot.class && WildMobsMod.checkIsEntityNew(entity) && Math.random() * 100 < WildMobsMod.OCELOT_CONFIG.getOverrideChance())
 		{
-			EntityOcelot ocelot = (EntityOcelot) event.entity;
+			EntityOcelot ocelot = (EntityOcelot) entity;
 			EntityWMOcelot newOcelot = new EntityWMOcelot(event.world);
-			newOcelot.setPosition(ocelot.posX, ocelot.posY, ocelot.posZ);
-			newOcelot.setAngles(ocelot.rotationPitch, ocelot.rotationYaw);
+			newOcelot.setLocationAndAngles(ocelot.posX, ocelot.posY, ocelot.posZ, ocelot.rotationYaw, ocelot.rotationPitch);
 			newOcelot.setGrowingAge(ocelot.getGrowingAge());
 			ocelot.setDead();
 			event.setCanceled(true);
